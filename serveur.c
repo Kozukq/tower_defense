@@ -1,6 +1,6 @@
 #include "serveur.h"
 
-int main(int argc, char** argv){
+int main(int argc, char* argv[]){
   int port;
   if(argc != 2){
     printf("Veuillez préciser un numéro de port UDP (n'importe quel numéro fonctionne)\n");

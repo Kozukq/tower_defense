@@ -25,9 +25,11 @@ OBJETS_O = $(OBJETS) $(EXEC_O)
 
 CC = gcc
 CCFLAGS_STD = -Wall -O3 -Werror -ansi -pedantic
+CCFLAGS_MACOS = -I/usr/local/opt/ncurses/include
 CCFLAGS_DEBUG = -D _DEBUG_
 CCFLAGS = $(CCFLAGS_STD)
-CCLIBS = -lncurses
+CCLIBS = -lncurses 
+CCLIBS_MACOS = -L/usr/local/opt/ncurses/lib
 
 #
 # REGLES
@@ -39,6 +41,10 @@ all: msg $(OBJETS) $(EXEC_O)
 	$(CC) -o $$i $$i.o $(OBJETS) $(CCLIBS); \
 	done
 	@echo "Termine."
+
+mac: CCFLAGS = -Wall -O3 -Werror -std=c99 -pedantic $(CCFLAGS_MACOS)
+mac: CCLIBS = -lncurses $(CCLIBS_MACOS)
+mac: all
 
 msg:
 	@echo "Creation des objets..."

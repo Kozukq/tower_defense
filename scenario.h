@@ -8,8 +8,10 @@ typedef struct entree_t{
 	unsigned int donnees;
 } entree;
 
-typedef struct carte_t{
+typedef struct scenario_t{
+	size_t taille;
+	char * description;
 	entree * entrees;
-} carte;
+} scenario;
 
 #endif

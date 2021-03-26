@@ -1,3 +1,6 @@
+#ifndef SCENARIO_H
+#define SCENARIO_H
+
 typedef struct entree_t{
 	long temps;
 	unsigned char type;
@@ -8,3 +11,5 @@ typedef struct entree_t{
 typedef struct carte_t{
 	entree * entrees;
 } carte;
+
+#endif

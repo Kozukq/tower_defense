@@ -7,9 +7,9 @@
 4) Problèmes de concurrence/threads
 
 ### Fichiers binaires et communications UDP/TCP
-1) Lecture des fichiers binaires cartes et scénarios
-=> Structure pour les cartes/scénarios
-=> Lecture du contenu
+1) Lecture des fichiers binaires cartes et scénarios -> je m'en occupe (26/03/21)
+=> Structure pour les cartes/scénarios -> scenario.h et carte.h
+=> Lecture du contenu -> en cours
 2) Récupération des fichiers .bin dans les répertoires "cartes" et "scenarios"
 => Utilisation de opendir
 3) Échanges UDP entre le client et le serveur (listes, choix de la configuration)

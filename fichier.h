@@ -9,6 +9,6 @@
 #include "carte.h"
 #include "scenario.h"
 
-carte lire_carte(char * filename);
+void lire_carte(char * filename, carte * c);
 scenario lire_scenario(char * filename);
 #endif

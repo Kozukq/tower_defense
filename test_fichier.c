@@ -8,11 +8,11 @@ Il est également une référence pour savoir comment s'utilisent les fonctions 
 #include "fichier.h"
 
 int main(int argc, char* argv[]){
-	carte c;
-	if(argc != 2){
-		printf("Veuillez indiquer le chemin fichier de carte à lire");
-		exit(EXIT_FAILURE);
-	}
-	c = lire_carte(argv[1]);
+  carte * c = malloc(sizeof(carte));
+  if(argc != 2){
+    printf("Veuillez indiquer le chemin fichier de carte à lire");
+    exit(EXIT_FAILURE);
+  }
+  lire_carte(argv[1], c);
 }
 

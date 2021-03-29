@@ -1,12 +1,12 @@
 # Feuille de route
 
-### Modélisation
+### Modélisation -> à faire
 1) Données
 2) Echanges
 3) Fonctionnement du jeu
 4) Problèmes de concurrence/threads
 
-### Fichiers binaires et communications UDP/TCP
+### Fichiers binaires et communications UDP/TCP -> en cours (26/03/21)
 1) Lecture des fichiers binaires cartes et scénarios -> je m'en occupe (26/03/21)
 => Structure pour les cartes/scénarios -> scenario.h et carte.h
 => Lecture du contenu -> en cours

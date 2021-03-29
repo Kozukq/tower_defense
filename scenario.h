@@ -4,7 +4,7 @@
 typedef struct entree_t{
 	long temps;
 	unsigned char type;
-	char[255] msg;
+	char msg[255];
 	unsigned int donnees;
 } entree;
 

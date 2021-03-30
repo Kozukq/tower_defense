@@ -14,5 +14,8 @@ int main(int argc, char* argv[]){
     exit(EXIT_FAILURE);
   }
   lire_carte(argv[1], c);
+  printf("taille : %d\n", c-> taille);
+  /*La description ne s'affiche pas correctement*/
+  printf("description : %s\n", c-> description);
 }
 

@@ -26,7 +26,8 @@ void lire_carte(char * filename, carte * c){
     exit(EXIT_FAILURE);
   }
   printf("description : %s", bytesDesc);
-  c -> description = bytesDesc;
+  c -> description = malloc(sizeof(char)*taille);
+  memcpy(c->description, bytesDesc,sizeof(char)*taille);
   
 }
 
@@ -58,5 +59,6 @@ void lire_scenario(char * filename, scenario * s){
     exit(EXIT_FAILURE);
   }
   printf("description : %s", bytesDesc);
-  s -> description = bytesDesc;
+  s -> description = malloc(sizeof(char) * taille);
+  memcpy(s->description, bytesDesc,sizeof(char)*taille);
 }

@@ -9,13 +9,13 @@ Il est également une référence pour savoir comment s'utilisent les fonctions 
 
 int main(int argc, char* argv[]){
   carte * c = malloc(sizeof(carte));
+  scenario * s = malloc(sizeof(scenario));
   if(argc != 2){
     printf("Veuillez indiquer le chemin fichier de carte à lire");
     exit(EXIT_FAILURE);
   }
   lire_carte(argv[1], c);
   printf("taille : %d\n", c-> taille);
-  /*La description ne s'affiche pas correctement*/
   printf("description : %s\n", c-> description);
 }
 

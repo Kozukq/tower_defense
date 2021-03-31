@@ -9,7 +9,7 @@
 # CONFIGURATION GENERALE
 #
 
-EXEC = client serveur
+EXEC = server client
 OBJETS =
 NOM_PROJET = tower_defense
 
@@ -102,5 +102,5 @@ archive: clean
 	@echo "Termine."
 
 # DEPENDANCES
-client.o: client.c client.h communication.h
-serveur.o: serveur.c serveur.h communication.h
+server.o: server.c
+client.o: client.c

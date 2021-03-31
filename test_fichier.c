@@ -17,5 +17,6 @@ int main(int argc, char* argv[]){
   lire_carte(argv[1], c);
   printf("taille : %d\n", c-> taille);
   printf("description : %s\n", c-> description);
+  printf("ligne 1 : %d %d %d %d ...\n", c-> plateau[0][0], c-> plateau[0][1], c-> plateau[0][2], c-> plateau[0][3]);
 }
 

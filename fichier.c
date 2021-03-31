@@ -1,9 +1,10 @@
 #include "fichier.h"
 
 void lire_carte(char * filename, carte * c){
-  int fd, retour, i;
+  int fd, retour, i, j;
   unsigned char bytesTaille[sizeof(size_t)];
   unsigned char bytesDesc[255];
+  unsigned char bytesLigne[sizeof(unsigned char)*TAILLE_LIGNE_CARTE];
   fd = open(filename, O_RDONLY);
   if(fd == -1){
     printf("Erreur lors de l'ouverture de la carte\n");
@@ -28,6 +29,17 @@ void lire_carte(char * filename, carte * c){
   printf("description : %s", bytesDesc);
   c -> description = malloc(sizeof(char)*taille);
   memcpy(c->description, bytesDesc,sizeof(char)*taille);
+  for(i = 0; i < 15; i = i+1){
+    retour = read(fd, bytesLigne, sizeof(unsigned char)*TAILLE_LIGNE_CARTE);
+    if(retour < 0){
+      printf("Erreur lors de la lecture des octets dans le fichier\n");
+      perror("READ");
+      exit(EXIT_FAILURE);
+    }
+    for(j = 0; j < 15; j = j+1){
+      c -> plateau[14-i][14-j] = (int) bytesLigne[j];
+    }
+  }
   
 }
 

@@ -1,14 +1,12 @@
 #ifndef CARTE_H
 #define CARTE_H
 
-typedef struct cases_t{
-	int type;
-} cases;
+#define TAILLE_LIGNE_CARTE 15
 
 typedef struct carte_t{
-	size_t taille;
-	char * description;
-	cases * lignes;
+  size_t taille;
+  char * description;
+  unsigned int plateau[TAILLE_LIGNE_CARTE][TAILLE_LIGNE_CARTE];
 } carte;
 
 #endif

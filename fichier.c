@@ -46,6 +46,7 @@ void lire_scenario(char * filename, scenario * s){
   int fd, retour, i;
   unsigned char bytesTaille[sizeof(size_t)];
   unsigned char bytesDesc[255];
+  printf("nom : %s\n", filename);
   fd = open(filename, O_RDONLY);
   if(fd == -1){
     fprintf(stderr,"Erreur lors de l'ouverture du scénario\n");
@@ -54,7 +55,7 @@ void lire_scenario(char * filename, scenario * s){
   }
   retour = read(fd, bytesTaille, sizeof(size_t));
   if(retour < 0){
-    fprintf(stderr,"Erreur lors de la lecture des octets dans le fichier\n");
+    fprintf(stderr,"Erreur lors de la lecture des octets dans le fichier taille\n");
     perror("READ");
     exit(EXIT_FAILURE);
   }
@@ -63,7 +64,7 @@ void lire_scenario(char * filename, scenario * s){
   
   retour = read(fd, bytesDesc, taille * sizeof(char));
   if(retour < 0){
-    fprintf(stderr,"Erreur lors de la lecture des octets dans le fichier\n");
+    fprintf(stderr,"Erreur lors de la lecture des octets dans le fichier descr\n");
     perror("READ");
     exit(EXIT_FAILURE);
   }

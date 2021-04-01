@@ -56,21 +56,21 @@ interface_t interface_creer(jeu_t *jeu) {
     retour.carte = fenetre_creer(CARTE_POSX, CARTE_POSY, CARTE_LARGEUR, CARTE_HAUTEUR, "Carte", FALSE);
     for(i = 0; i < 15; i++) {
         for(j = 0; j < 15; j++) {
-            if(jeu->carte[i][j] == CASE_VIDE) {
+            if(jeu->carte[i][j].element == CASE_VIDE) {
                 waddch(retour.carte->interieur, ' ' | COLOR_PAIR(COULEUR_VIDE));
             }
-            else if((jeu->carte[i][j] >= CASE_MIN_JOUEUR) && (jeu->carte[i][j] <= CASE_MAX_JOUEUR)) {
+            else if((jeu->carte[i][j].element >= CASE_MIN_JOUEUR) && (jeu->carte[i][j].element <= CASE_MAX_JOUEUR)) {
                 wattron(retour.carte->interieur, COLOR_PAIR(COULEUR_JOUEUR));
-                wprintw(retour.carte->interieur, "%d", jeu->carte[i][j]);
+                wprintw(retour.carte->interieur, "%d", jeu->carte[i][j].element);
             }
-            else if(jeu->carte[i][j] == CASE_ORDI) {
+            else if(jeu->carte[i][j].element == CASE_ORDI) {
                 wattron(retour.carte->interieur, COLOR_PAIR(COULEUR_ORDI));
                 wprintw(retour.carte->interieur, "O");
             }
-            else if(jeu->carte[i][j] == CASE_FORT) {
+            else if(jeu->carte[i][j].element == CASE_FORT) {
                 waddch(retour.carte->interieur, 'F' | COLOR_PAIR(COULEUR_FORT));
             }
-            else if((jeu->carte[i][j] >= CASE_MIN_CHEMIN) && (jeu->carte[i][j] <= CASE_MAX_CHEMIN)) {
+            else if((jeu->carte[i][j].element >= CASE_MIN_CHEMIN) && (jeu->carte[i][j].element <= CASE_MAX_CHEMIN)) {
                 waddch(retour.carte->interieur, ' ' | COLOR_PAIR(COULEUR_CHEMIN));
             }
         }
@@ -395,24 +395,24 @@ void interface_carte(interface_t *interface, jeu_t *jeu, int posX, int posY) {
     switch(interface->outilsel) {
         case OUTIL_NONE:
             /* Pas d'outils sélectionné : on affiche le contenu de la case */
-            if(jeu->carte[posY][posX] == CASE_VIDE) {
+            if(jeu->carte[posY][posX].element == CASE_VIDE) {
                 wprintw(interface->infos->interieur, "\nOh !!! De l'herbe !!!");
             }
-            else if((jeu->carte[posY][posX] >= CASE_MIN_JOUEUR) && (jeu->carte[posY][posX] <= CASE_MAX_JOUEUR)) {
-                wprintw(interface->infos->interieur, "\nLe point de depart des unites de l'adversaire %d", (jeu->carte[posY][posX] - CASE_MIN_JOUEUR + 1));
+            else if((jeu->carte[posY][posX].element >= CASE_MIN_JOUEUR) && (jeu->carte[posY][posX].element <= CASE_MAX_JOUEUR)) {
+                wprintw(interface->infos->interieur, "\nLe point de depart des unites de l'adversaire %d", (jeu->carte[posY][posX].element - CASE_MIN_JOUEUR + 1));
             }
-            else if(jeu->carte[posY][posX] == CASE_ORDI) {
+            else if(jeu->carte[posY][posX].element == CASE_ORDI) {
                 wprintw(interface->infos->interieur, "\nLe point de depart des vagues envoyees par l'ordinateur");
             }
-            else if(jeu->carte[posY][posX] == CASE_FORT) {
+            else if(jeu->carte[posY][posX].element == CASE_FORT) {
                 wprintw(interface->infos->interieur, "\nLe fort a proteger");
             }
-            else if((jeu->carte[posY][posX] >= CASE_MIN_CHEMIN) && (jeu->carte[posY][posX] <= CASE_MAX_CHEMIN)) {
+            else if((jeu->carte[posY][posX].element >= CASE_MIN_CHEMIN) && (jeu->carte[posY][posX].element <= CASE_MAX_CHEMIN)) {
                 wprintw(interface->infos->interieur, "\nUne route...");
             }
             break;
         case OUTIL_TOUR_1:
-            if((jeu->carte[posY][posX] == CASE_VIDE) && (jeu->argent >= TOUR_1_COUT)) {
+            if((jeu->carte[posY][posX].element == CASE_VIDE) && (jeu->argent >= TOUR_1_COUT)) {
                 jeu->argent -= TOUR_1_COUT;
                 wprintw(interface->infos->interieur, "\nTour 1 posee... pour de faux !");
                 interface_MAJOutils(interface, jeu);
@@ -424,7 +424,7 @@ void interface_carte(interface_t *interface, jeu_t *jeu, int posX, int posY) {
             }
             break;
         case OUTIL_TOUR_2:
-            if((jeu->carte[posY][posX] == CASE_VIDE) && (jeu->argent >= TOUR_2_COUT)) {
+            if((jeu->carte[posY][posX].element == CASE_VIDE) && (jeu->argent >= TOUR_2_COUT)) {
                 jeu->argent -= TOUR_2_COUT;
                 wprintw(interface->infos->interieur, "\nTour 2 posee... pour de faux !");
                 interface_MAJOutils(interface, jeu);
@@ -436,7 +436,7 @@ void interface_carte(interface_t *interface, jeu_t *jeu, int posX, int posY) {
             }
             break;
         case OUTIL_TOUR_3:
-            if((jeu->carte[posY][posX] == CASE_VIDE) && (jeu->argent >= TOUR_3_COUT)) {
+            if((jeu->carte[posY][posX].element == CASE_VIDE) && (jeu->argent >= TOUR_3_COUT)) {
                 jeu->argent -= TOUR_3_COUT;
                 wprintw(interface->infos->interieur, "\nTour 3 posee... pour de faux !");
                 interface_MAJOutils(interface, jeu);
@@ -448,7 +448,7 @@ void interface_carte(interface_t *interface, jeu_t *jeu, int posX, int posY) {
             }
             break;
         case OUTIL_TOUR_4:
-            if((jeu->carte[posY][posX] == CASE_VIDE) && (jeu->argent >= TOUR_4_COUT)) {
+            if((jeu->carte[posY][posX].element == CASE_VIDE) && (jeu->argent >= TOUR_4_COUT)) {
                 jeu->argent -= TOUR_4_COUT;
                 wprintw(interface->infos->interieur, "\nTour 4 posee... pour de faux !");
                 interface_MAJOutils(interface, jeu);
@@ -460,7 +460,7 @@ void interface_carte(interface_t *interface, jeu_t *jeu, int posX, int posY) {
             }
             break;
         case OUTIL_TOUR_5:
-            if((jeu->carte[posY][posX] == CASE_VIDE) && (jeu->argent >= TOUR_5_COUT)) {
+            if((jeu->carte[posY][posX].element == CASE_VIDE) && (jeu->argent >= TOUR_5_COUT)) {
                 jeu->argent -= TOUR_5_COUT;
                 wprintw(interface->infos->interieur, "\nTour 5 posee... pour de faux !");
                 interface_MAJOutils(interface, jeu);

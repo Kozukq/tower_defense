@@ -1,20 +1,48 @@
 #ifndef _JEU_
 #define _JEU_
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <pthread.h>
+#include <unistd.h>
+#include <errno.h>
+#include <ncurses.h>
+#include "../carte.h"
+#define NB_LIG_CARTE 15 /*Le nombre de lignes de la carte*/
+#define NB_COL_CARTE 15 /* le nombre de colonnes de la carte */
 
 /**
  * Ce fichier permet de tester l'interface en lui fournissant les données nécessaires.
  * Pour le projet, vous pouvez/devez le faire différemment...
  */
 
+
+typedef struct case_t {					/* Description d'une case sur la grille de simulation */
+  int element;							/* Ce qui est present sur la case */
+  pthread_t *unite;						/* Identifiant du thread de l'élément present sur la case */
+  pthread_mutex_t mutex;					/* Protection de la case */
+} case_t;
+
+/*int nb_fourmis; -> inutile pour le moment, à voir plus tard ?
+  pthread_mutex_t mutex_nb_fourmis;*/
 /* La structure contenant les informations sur le jeu */
 typedef struct {
-    unsigned char carte[15][15];   /* La carte */
-    unsigned int vies;             /* Vies du joueur */
-    unsigned int adv[3];           /* Vies des adversaires */
-    unsigned int argent;           /* Argent */
-    unsigned int freeze;           /* Etat freeze */
-    unsigned int unfreeze;         /* Etat unfreeze */
+  carte carte_entiere;   /* La carte -> peut être inutile ?*/
+  case_t carte[NB_LIG_CARTE][NB_COL_CARTE];
+  unsigned int vies;             /* Vies du joueur */
+  unsigned int adv[3];           /* Vies des adversaires */
+  unsigned int argent;           /* Argent */
+  unsigned int freeze;           /* Etat freeze */
+  unsigned int unfreeze;         /* Etat unfreeze */
 } jeu_t;
+
+void initialiser_plateau(jeu_t * jeu);
+
+/* Constantes d'initialisation du jeu */
+#define VIE_DEFAUT 10
+#define ARGENT_DEFAUT 150
+#define FREEZE_DEFAUT 0
+#define UNFREEZE_DEFAUT 0
 
 /* Constantes pour les coûts des unités */
 #define SOLDAT_COUT       100

@@ -5,50 +5,67 @@
 #include <errno.h> /* errno */
 #include <arpa/inet.h> /* htons(), inet_pton() */
 #include <unistd.h> /* close() */
+#include "network.h"
 
 int main(int argc, char* argv[]) {
 
-	int fd;
+	int sockfd;
 	int status;
-	char message[256];
-	struct sockaddr_in server_address;
+	int value;
+	int i;
+	char* map_list[3];
+	struct sockaddr_in server;
 
 	/* vérification des arguments */
-	if(argc != 4) {
-		fprintf(stderr,"Wrong argument. Please specify the IPv4 address of the server, its UDP port and a valid message\n");
+	if(argc != 3) {
+		fprintf(stderr,"Wrong argument : IPv4 address, UDP port required\n");
 		exit(EXIT_FAILURE);
 	}
 
 	/* ouverture de la socket */
-	fd = socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP);
-	if(fd == -1) {
+	sockfd = socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP);
+	if(sockfd == -1) {
 		fprintf(stderr,"%s (socket opening)\n",strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 
 	/* création de l'adresse du serveur */
-	memset(&server_address,0,sizeof(struct sockaddr_in));
-	server_address.sin_family = AF_INET;
-	server_address.sin_port = htons(atoi(argv[2]));
-	status = inet_pton(AF_INET,argv[1],&server_address.sin_addr);
+	memset(&server,0,sizeof(struct sockaddr_in));
+	server.sin_family = AF_INET;
+	server.sin_port = htons(atoi(argv[2]));
+	status = inet_pton(AF_INET,argv[1],&server.sin_addr);
 	if(status == -1) {
 		fprintf(stderr,"%s (server address creation)\n",strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 
-	/* préparation du message pour l'envoi */
-	memset(message,0,sizeof(message));
-	strcpy(message,argv[3]);
+	/* menu principal */
+	fprintf(stdout,"MENU\n1 : Start a game\n2 : See maps\n3 : See scenarios\n4 : See lobbies\n");
+	fscanf(stdin,"%d",&value);
 
-	/* envoi au serveur */
-	status = sendto(fd,message,sizeof(message),0,(struct sockaddr*)&server_address,sizeof(struct sockaddr_in));
+	/* envoi au serveur : choix menu */
+	fprintf(stdout,"sending..\n");
+	status = sendto(sockfd,&value,sizeof(value),0,(struct sockaddr*)&server,sizeof(struct sockaddr_in));
 	if(status == -1) {
 		fprintf(stderr,"%s (sending to the server)\n",strerror(errno));
 		exit(EXIT_FAILURE);		
 	}
 
+	/* réception du serveur */
+	fprintf(stdout,"..waiting\n");
+	status = recvfrom(sockfd,&map_list,sizeof(map_list),0,NULL,NULL);
+	if(status == -1) {
+		fprintf(stderr,"%s (receiving from the server)\n",strerror(errno));
+		exit(EXIT_FAILURE);		
+	}
+
+	/* affichage */
+	for(i = 0; i < 3; i++) {
+		fprintf(stdout,"%s\n",map_list[i]);
+	}
+
 	/* fermeture de la socket */
-	status = close(fd);
+	status = close(sockfd);
 	if(status == -1) {
 		fprintf(stderr,"%s (socket closing)\n",strerror(errno));
 		exit(EXIT_FAILURE);

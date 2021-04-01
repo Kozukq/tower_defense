@@ -14,12 +14,6 @@ int main() {
   int ch;
   interface_t interface;
   bool quitter = FALSE;
-
-  /**
-   * A MODIFIER DANS LE PROJET
-   * Contient la carte, le nombre de vie de l'utilisateur et des adversaires, l'argent,
-   * l'énergie pour la bombe et le freeze.
-   */
   jeu_t jeu;
   initialiser_plateau(&jeu);
 

@@ -1,5 +1,6 @@
 #ifndef _INTERFACE_
 #define _INTERFACE_
+#include "cases.h"
 
 /* Propriétés de la fenêtre d'informations */
 #define INFOS_POSX        0 /* Position en X */
@@ -34,22 +35,6 @@
 /* Dimensions de l'interface (pour vérification avec celles du terminal) */
 #define LARGEUR INFOS_LARGEUR
 #define HAUTEUR ATTAQUES_POSY + ATTAQUES_HAUTEUR
-
-/* Types de case */
-#define CASE_VIDE         0
-#define CASE_MIN_JOUEUR   1
-#define CASE_MAX_JOUEUR   3
-#define CASE_MIN_CHEMIN   4
-#define CASE_MAX_CHEMIN 229
-#define CASE_ORDI       254
-#define CASE_FORT       255
-
-/* Couleurs des cases */
-#define COULEUR_VIDE      2
-#define COULEUR_FORT      7
-#define COULEUR_CHEMIN    3
-#define COULEUR_JOUEUR    6
-#define COULEUR_ORDI      6
 
 /* Outils */
 #define OUTIL_NONE       -1

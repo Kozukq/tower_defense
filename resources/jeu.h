@@ -8,6 +8,8 @@
 #include <errno.h>
 #include <ncurses.h>
 #include "../carte.h"
+#include "cases.h"
+
 #define NB_LIG_CARTE 15 /*Le nombre de lignes de la carte*/
 #define NB_COL_CARTE 15 /* le nombre de colonnes de la carte */
 
@@ -16,12 +18,6 @@
  * Pour le projet, vous pouvez/devez le faire différemment...
  */
 
-
-typedef struct case_t {					/* Description d'une case sur la grille de simulation */
-  int element;							/* Ce qui est present sur la case */
-  pthread_t *unite;						/* Identifiant du thread de l'élément present sur la case */
-  pthread_mutex_t mutex;					/* Protection de la case */
-} case_t;
 
 /*int nb_fourmis; -> inutile pour le moment, à voir plus tard ?
   pthread_mutex_t mutex_nb_fourmis;*/
@@ -43,6 +39,8 @@ void initialiser_plateau(jeu_t * jeu);
 #define ARGENT_DEFAUT 150
 #define FREEZE_DEFAUT 0
 #define UNFREEZE_DEFAUT 0
+
+/* Constantes */
 
 /* Constantes pour les coûts des unités */
 #define SOLDAT_COUT       100

@@ -17,6 +17,7 @@ void load(char* dirpath, struct config* config) {
 	char scenarios_path[256];
 	char filepath[256];
 	struct dirent* file;
+	struct stat filestat;
 
 	/* initialisations */
 	strcat(maps_path,dirpath);
@@ -31,31 +32,39 @@ void load(char* dirpath, struct config* config) {
 		exit(EXIT_FAILURE);
 	}
 
-	/* ignorement des sous-répertoires . et .. */
-	for(i = 0; i < 2; i++) {
-		file = readdir(dir);
-		if(file == NULL){
-			fprintf(stderr,"%s (maps directory reading)\n",strerror(errno));
-			exit(EXIT_FAILURE);
-		}
-	}
-
 	/* lecture et chargement des cartes */
-	for(i = 0; i < 3 ; i++) {
-		
+	i = 0;
+	while(1) {
+		errno = 0;
 		file = readdir(dir);
 		if(file == NULL){
-			fprintf(stderr,"%s (maps directory reading)\n",strerror(errno));
-			exit(EXIT_FAILURE);
+			if(errno != 0) {
+				fprintf(stderr,"%s (maps directory reading)\n",strerror(errno));
+				exit(EXIT_FAILURE);
+			}
+			else {
+				break;
+			}
 		}
 
 		memset(filepath,'\0',sizeof(filepath));
 		strcat(filepath,maps_path);
 		strcat(filepath,file->d_name);
 
-		load_map(filepath,&config->maps[i]);
+		status = lstat(filepath,&filestat);
+		if(status == -1) {
+			fprintf(stderr,"%s (maps directory current filestat reading)\n",strerror(errno));
+			exit(EXIT_FAILURE);
+		}
 
-		if(DEBUG) fprintf(stdout,"%s loaded\n",filepath);
+		if(S_ISREG(filestat.st_mode)) {
+			load_map(filepath,&config->maps[i]);
+			if(DEBUG) fprintf(stdout,"%s loaded\n",filepath);
+			i++;
+		}
+		else {
+			if(DEBUG) fprintf(stdout,"%s not loaded\n",filepath);
+		}
 	}
 
 	/* fermeture du répertoire */
@@ -72,31 +81,39 @@ void load(char* dirpath, struct config* config) {
 		exit(EXIT_FAILURE);
 	}
 
-	/* ignorement des sous-répertoires . et .. */
-	for(i = 0; i < 2; i++) {
-		file = readdir(dir);
-		if(file == NULL){
-			fprintf(stderr,"%s (maps directory reading)\n",strerror(errno));
-			exit(EXIT_FAILURE);
-		}
-	}
-
 	/* lecture et chargement des scénarios */
-	for(i = 0; i < 3 ; i++) {
-		
+	i = 0;
+	while(1) {
+		errno = 0;
 		file = readdir(dir);
 		if(file == NULL){
-			fprintf(stderr,"%s (scenarios directory reading)\n",strerror(errno));
-			exit(EXIT_FAILURE);
+			if(errno != 0) {
+				fprintf(stderr,"%s (scenarios directory reading)\n",strerror(errno));
+				exit(EXIT_FAILURE);
+			}
+			else {
+				break;
+			}
 		}
 
 		memset(filepath,'\0',sizeof(filepath));
 		strcat(filepath,scenarios_path);
 		strcat(filepath,file->d_name);
 
-		load_scenario(filepath,&config->scenarios[i]);
+		status = lstat(filepath,&filestat);
+		if(status == -1) {
+			fprintf(stderr,"%s (scenarios directory current filestat reading)\n",strerror(errno));
+			exit(EXIT_FAILURE);
+		}
 
-		if(DEBUG) fprintf(stdout,"%s loaded\n",filepath);
+		if(S_ISREG(filestat.st_mode)) {
+			load_scenario(filepath,&config->scenarios[i]);
+			if(DEBUG) fprintf(stdout,"%s loaded\n",filepath);
+			i++;
+		}
+		else {
+			if(DEBUG) fprintf(stdout,"%s not loaded\n",filepath);
+		}
 	}
 
 	/* fermeture du répertoire */

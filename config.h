@@ -1,7 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include <stdint.h>
+#include <stdint.h> /* nécessaire pour gérer les types à taille fixe sur Linux apparemment */
 
 #define DEBUG 1
 

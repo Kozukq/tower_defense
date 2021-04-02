@@ -517,78 +517,80 @@ void interface_carte(interface_t *interface, jeu_t *jeu, int posX, int posY) {
  * @param c la touche pressée
  */
 void interface_main(interface_t *interface, jeu_t *jeu, int c) {
-    int sourisX, sourisY, posX, posY;
-
-    if((c == KEY_MOUSE) && (souris_getpos(&sourisX, &sourisY, NULL) == OK)) {
-        /* Gestion des actions de la souris */
-
-        if(fenetre_getcoordonnees(interface->outils, sourisX, sourisY, &posX, &posY)) {
-            interface_outils(interface, jeu, posX, posY);
-        }
-        else if(fenetre_getcoordonnees(interface->attaques, sourisX, sourisY, &posX, &posY)) {
-            interface_attaques(interface, jeu, posX, posY);
-        }
-        else if(fenetre_getcoordonnees(interface->carte, sourisX, sourisY, &posX, &posY)) {
-            interface_carte(interface, jeu, posX, posY);
-        }
+  int sourisX, sourisY, posX, posY;
+  
+  if((c == KEY_MOUSE) && (souris_getpos(&sourisX, &sourisY, NULL) == OK)) {
+    /* Gestion des actions de la souris */
+    
+    if(fenetre_getcoordonnees(interface->outils, sourisX, sourisY, &posX, &posY)) {
+      interface_outils(interface, jeu, posX, posY);
     }
-    else {
-        /* Gestion du clavier : à modifier pour le projet */
-        switch(c) {
-            case '1':
-            case '2':
-            case '3':
-                /* Supprime une vie à un adversaire */
-                if(jeu->adv[c - '1'] != 0) {
-                    jeu->adv[c - '1']--;
-                    interface_MAJEtat(interface, jeu);
-                }
-                break;
-            case 'V':
-            case 'v':
-                /* Supprime une vie au joueur */
-                if(jeu->vies > 0) {
-                    jeu->vies--;
-                    interface_MAJEtat(interface, jeu);
-                }
-                break;
-            case '$':
-                /* Ajoute de l'argent */
-                jeu->argent += 10;
-                if(jeu->argent > 99999)
-                    jeu->argent = 99999;
-                interface_MAJEtat(interface, jeu);
-                interface_MAJOutils(interface, jeu);
-                interface_MAJAttaques(interface, jeu);
-                break;
-            case 'U':
-            case 'u':
-                /* Avance l'état du unfreeze */
-                if(jeu->unfreeze < 10) {
-                    jeu->unfreeze++;
-                    interface_MAJEtat(interface, jeu);
-                    interface_MAJOutils(interface, jeu);
-                }
-                break;
-            case 'F':
-            case 'f':
-                /* Avance l'état du freeze */
-                if(jeu->freeze < 10) {
-                    jeu->freeze++;
-                    interface_MAJEtat(interface, jeu);
-                    interface_MAJAttaques(interface, jeu);
-                }
-                break;
-            case 27:
-                /* Touche ECHAP : annule l'outil sélectionné */
-                interface->outilsel = OUTIL_NONE;
-                interface_MAJOutils(interface, jeu);
-                break;
-            default:
-                /* Utile en mode DEBUG si on souhaite afficher le caractère associé à la touche pressée */
-                wprintw(interface->infos->interieur, "\nTouche %d pressee", c);
-                wrefresh(interface->infos->interieur);
-                break;
-        }
+    else if(fenetre_getcoordonnees(interface->attaques, sourisX, sourisY, &posX, &posY)) {
+      interface_attaques(interface, jeu, posX, posY);
     }
+    else if(fenetre_getcoordonnees(interface->carte, sourisX, sourisY, &posX, &posY)) {
+      pthread_mutex_lock(&jeu->carte[posY][posY].mutex);
+      interface_carte(interface, jeu, posX, posY);
+      pthread_mutex_unlock(&jeu->carte[posY][posY].mutex);
+    }
+  }
+  else {
+    /* Gestion du clavier : à modifier pour le projet */
+    switch(c) {
+    case '1':
+    case '2':
+    case '3':
+      /* Supprime une vie à un adversaire */
+      if(jeu->adv[c - '1'] != 0) {
+	jeu->adv[c - '1']--;
+	interface_MAJEtat(interface, jeu);
+      }
+      break;
+    case 'V':
+    case 'v':
+      /* Supprime une vie au joueur */
+      if(jeu->vies > 0) {
+	jeu->vies--;
+	interface_MAJEtat(interface, jeu);
+      }
+      break;
+    case '$':
+      /* Ajoute de l'argent */
+      jeu->argent += 10;
+      if(jeu->argent > 99999)
+	jeu->argent = 99999;
+      interface_MAJEtat(interface, jeu);
+      interface_MAJOutils(interface, jeu);
+      interface_MAJAttaques(interface, jeu);
+      break;
+    case 'U':
+    case 'u':
+      /* Avance l'état du unfreeze */
+      if(jeu->unfreeze < 10) {
+	jeu->unfreeze++;
+	interface_MAJEtat(interface, jeu);
+	interface_MAJOutils(interface, jeu);
+      }
+      break;
+    case 'F':
+    case 'f':
+      /* Avance l'état du freeze */
+      if(jeu->freeze < 10) {
+	jeu->freeze++;
+	interface_MAJEtat(interface, jeu);
+	interface_MAJAttaques(interface, jeu);
+      }
+      break;
+    case 27:
+      /* Touche ECHAP : annule l'outil sélectionné */
+      interface->outilsel = OUTIL_NONE;
+      interface_MAJOutils(interface, jeu);
+      break;
+    default:
+      /* Utile en mode DEBUG si on souhaite afficher le caractère associé à la touche pressée */
+      wprintw(interface->infos->interieur, "\nTouche %d pressee", c);
+      wrefresh(interface->infos->interieur);
+      break;
+    }
+  }
 }

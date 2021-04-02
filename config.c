@@ -153,7 +153,7 @@ void load_map(char* filepath, struct map* map) {
 
 	/* fermeture du fichier */
 	status = close(fd);
-	if(fd == -1) {
+	if(status == -1) {
 		fprintf(stderr,"%s (map file opening)\n",strerror(errno));
 		exit(EXIT_FAILURE);		
 	}
@@ -231,7 +231,7 @@ void load_scenario(char* filepath, struct scenario* scenario) {
 
 	/* fermeture du fichier */
 	status = close(fd);
-	if(fd == -1) {
+	if(status == -1) {
 		fprintf(stderr,"%s (scenario file opening)\n",strerror(errno));
 		exit(EXIT_FAILURE);		
 	}

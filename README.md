@@ -7,7 +7,7 @@
 4) Problèmes de concurrence/threads
 
 ### Fichiers binaires et communications UDP/TCP 
-<span style="color:green">some *green* text</span>
+<span style="color:green">some <em>green</em> text</span>
 1) Lecture des fichiers binaires cartes et scénarios
 => Structure pour les cartes/scénarios
 => Lecture du contenu

@@ -1,4 +1,5 @@
 #include "jeu.h"
+#include <string.h>
 
 void initialiser_plateau(jeu_t * jeu) {
   int i, j;
@@ -39,4 +40,13 @@ void initialiser_plateau(jeu_t * jeu) {
       jeu -> carte[i][j] = case_plateau;
     }
   }
+}
+
+void * thread_tour(void * arg){
+  char * c = "Hello";
+  pthread_exit(c);
+}
+
+void creation_thread(int type_unite, jeu_t * jeu, int posY, int posX){
+  pthread_create(jeu->carte[posY][posX].unite, NULL, thread_tour, NULL);
 }

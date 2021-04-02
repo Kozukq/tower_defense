@@ -1,6 +1,9 @@
 #include "fenetre.h"
 #include "ncurses.h"
 #include "jeu.h"
+#include  <pthread.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 #include "interface.h"
 
@@ -392,99 +395,119 @@ void interface_attaques(interface_t *interface, jeu_t *jeu, int posX, int posY) 
  * @param posY la position Y du clic dans la fenêtre
  */
 void interface_carte(interface_t *interface, jeu_t *jeu, int posX, int posY) {
-    switch(interface->outilsel) {
-        case OUTIL_NONE:
-            /* Pas d'outils sélectionné : on affiche le contenu de la case */
-            if(jeu->carte[posY][posX].element == CASE_VIDE) {
-                wprintw(interface->infos->interieur, "\nOh !!! De l'herbe !!!");
-            }
-            else if((jeu->carte[posY][posX].element >= CASE_MIN_JOUEUR) && (jeu->carte[posY][posX].element <= CASE_MAX_JOUEUR)) {
-                wprintw(interface->infos->interieur, "\nLe point de depart des unites de l'adversaire %d", (jeu->carte[posY][posX].element - CASE_MIN_JOUEUR + 1));
-            }
-            else if(jeu->carte[posY][posX].element == CASE_ORDI) {
-                wprintw(interface->infos->interieur, "\nLe point de depart des vagues envoyees par l'ordinateur");
-            }
-            else if(jeu->carte[posY][posX].element == CASE_FORT) {
-                wprintw(interface->infos->interieur, "\nLe fort a proteger");
-            }
-            else if((jeu->carte[posY][posX].element >= CASE_MIN_CHEMIN) && (jeu->carte[posY][posX].element <= CASE_MAX_CHEMIN)) {
-                wprintw(interface->infos->interieur, "\nUne route...");
-            }
-            break;
-        case OUTIL_TOUR_1:
-            if((jeu->carte[posY][posX].element == CASE_VIDE) && (jeu->argent >= TOUR_1_COUT)) {
-                jeu->argent -= TOUR_1_COUT;
-                wprintw(interface->infos->interieur, "\nTour 1 posee... pour de faux !");
-                interface_MAJOutils(interface, jeu);
-                interface_MAJEtat(interface, jeu);
-                interface_MAJAttaques(interface, jeu);
-            }
-            else {
-                wprintw(interface->infos->interieur, "\nDesole, pas possible...");
-            }
-            break;
-        case OUTIL_TOUR_2:
-            if((jeu->carte[posY][posX].element == CASE_VIDE) && (jeu->argent >= TOUR_2_COUT)) {
-                jeu->argent -= TOUR_2_COUT;
-                wprintw(interface->infos->interieur, "\nTour 2 posee... pour de faux !");
-                interface_MAJOutils(interface, jeu);
-                interface_MAJEtat(interface, jeu);
-                interface_MAJAttaques(interface, jeu);
-            }
-            else {
-                wprintw(interface->infos->interieur, "\nDesole, pas possible...");
-            }
-            break;
-        case OUTIL_TOUR_3:
-            if((jeu->carte[posY][posX].element == CASE_VIDE) && (jeu->argent >= TOUR_3_COUT)) {
-                jeu->argent -= TOUR_3_COUT;
-                wprintw(interface->infos->interieur, "\nTour 3 posee... pour de faux !");
-                interface_MAJOutils(interface, jeu);
-                interface_MAJEtat(interface, jeu);
-                interface_MAJAttaques(interface, jeu);
-            }
-            else {
-                wprintw(interface->infos->interieur, "\nDesole, pas possible...");
-            }
-            break;
-        case OUTIL_TOUR_4:
-            if((jeu->carte[posY][posX].element == CASE_VIDE) && (jeu->argent >= TOUR_4_COUT)) {
-                jeu->argent -= TOUR_4_COUT;
-                wprintw(interface->infos->interieur, "\nTour 4 posee... pour de faux !");
-                interface_MAJOutils(interface, jeu);
-                interface_MAJEtat(interface, jeu);
-                interface_MAJAttaques(interface, jeu);
-            }
-            else {
-                wprintw(interface->infos->interieur, "\nDesole, pas possible...");
-            }
-            break;
-        case OUTIL_TOUR_5:
-            if((jeu->carte[posY][posX].element == CASE_VIDE) && (jeu->argent >= TOUR_5_COUT)) {
-                jeu->argent -= TOUR_5_COUT;
-                wprintw(interface->infos->interieur, "\nTour 5 posee... pour de faux !");
-                interface_MAJOutils(interface, jeu);
-                interface_MAJEtat(interface, jeu);
-                interface_MAJAttaques(interface, jeu);
-            }
-            else {
-                wprintw(interface->infos->interieur, "\nDesole, pas possible...");
-            }
-            break;
-        case OUTIL_UNFREEZE:
-            if(jeu->freeze == 10) {
-                jeu->freeze = 0;
-                wprintw(interface->infos->interieur, "\nFREEEEEZE !!!");
-                interface_MAJEtat(interface, jeu);
-            }
-            else {
-                interface->outilsel = OUTIL_NONE;
-                wprintw(interface->infos->interieur, "\nDesole, pas possible...");
-            }
-            interface_MAJOutils(interface, jeu);
-            break;
+  switch(interface->outilsel) {
+  case OUTIL_NONE:
+    /* Pas d'outils sélectionné : on affiche le contenu de la case */
+    if(jeu->carte[posY][posX].element == CASE_VIDE) {
+      wprintw(interface->infos->interieur, "\nOh !!! De l'herbe !!!");
     }
-    wrefresh(interface->infos->interieur);
+    else if((jeu->carte[posY][posX].element >= CASE_MIN_JOUEUR) && (jeu->carte[posY][posX].element <= CASE_MAX_JOUEUR)) {
+      wprintw(interface->infos->interieur, "\nLe point de depart des unites de l'adversaire %d", (jeu->carte[posY][posX].element - CASE_MIN_JOUEUR + 1));
+    }
+    else if(jeu->carte[posY][posX].element == CASE_ORDI) {
+      wprintw(interface->infos->interieur, "\nLe point de depart des vagues envoyees par l'ordinateur");
+    }
+    else if(jeu->carte[posY][posX].element == CASE_FORT) {
+      wprintw(interface->infos->interieur, "\nLe fort a proteger");
+    }
+    else if((jeu->carte[posY][posX].element >= CASE_MIN_CHEMIN) && (jeu->carte[posY][posX].element <= CASE_MAX_CHEMIN)) {
+      wprintw(interface->infos->interieur, "\nUne route...");
+    }
+    else if (jeu->carte[posY][posX].element == CASE_PRISE) {
+      wprintw(interface->infos->interieur, "\nCette case est prise !");
+    }
+    break;
+  case OUTIL_TOUR_1:
+    if((jeu->carte[posY][posX].element == CASE_VIDE) && (jeu->argent >= TOUR_1_COUT)) {
+      jeu->argent -= TOUR_1_COUT;
+      jeu->carte[posY][posX].element = CASE_PRISE;
+      wprintw(interface->infos->interieur, "\nTour 1 posee... pour de faux !");
+      jeu->carte[posY][posX].type_unite = UNITE_TOUR;
+      mvwaddch(interface->carte->interieur, posY, posX, 'T');
+      /*creation_thread(UNITE_TOUR, jeu, posY, posX)*/
+      interface_MAJOutils(interface, jeu);
+      interface_MAJEtat(interface, jeu);
+      interface_MAJAttaques(interface, jeu);
+    }
+    else {
+      wprintw(interface->infos->interieur, "\nDesole, pas possible...");
+    }
+    break;
+  case OUTIL_TOUR_2:
+    if((jeu->carte[posY][posX].element == CASE_VIDE) && (jeu->argent >= TOUR_2_COUT)) {
+      jeu->argent -= TOUR_2_COUT;
+      jeu->carte[posY][posX].element = CASE_PRISE;
+      wprintw(interface->infos->interieur, "\nTour 2 posee... pour de faux !");
+      jeu->carte[posY][posX].type_unite = UNITE_TOUR;
+      mvwaddch(interface->carte->interieur, posY, posX, 'T');
+      interface_MAJOutils(interface, jeu);
+      interface_MAJEtat(interface, jeu);
+      interface_MAJAttaques(interface, jeu);
+    }
+    else {
+      wprintw(interface->infos->interieur, "\nDesole, pas possible...");
+    }
+    break;
+  case OUTIL_TOUR_3:
+    if((jeu->carte[posY][posX].element == CASE_VIDE) && (jeu->argent >= TOUR_3_COUT)) {
+      jeu->argent -= TOUR_3_COUT;
+      jeu->carte[posY][posX].element = CASE_PRISE;
+      wprintw(interface->infos->interieur, "\nTour 3 posee... pour de faux !");
+      jeu->carte[posY][posX].type_unite = UNITE_TOUR;
+      mvwaddch(interface->carte->interieur, posY, posX, 'T');
+      interface_MAJOutils(interface, jeu);
+      interface_MAJEtat(interface, jeu);
+      interface_MAJAttaques(interface, jeu);
+    }
+    else {
+      wprintw(interface->infos->interieur, "\nDesole, pas possible...");
+    }
+    break;
+  case OUTIL_TOUR_4:
+    if((jeu->carte[posY][posX].element == CASE_VIDE) && (jeu->argent >= TOUR_4_COUT)) {
+      jeu->argent -= TOUR_4_COUT;
+      jeu->carte[posY][posX].element = CASE_PRISE;
+      wprintw(interface->infos->interieur, "\nTour 4 posee... pour de faux !");
+      jeu->carte[posY][posX].type_unite = UNITE_TOUR;
+      mvwaddch(interface->carte->interieur, posY, posX, 'T');
+      interface_MAJOutils(interface, jeu);
+      interface_MAJEtat(interface, jeu);
+      interface_MAJAttaques(interface, jeu);
+    }
+    else {
+      wprintw(interface->infos->interieur, "\nDesole, pas possible...");
+    }
+    break;
+  case OUTIL_TOUR_5:
+    if((jeu->carte[posY][posX].element == CASE_VIDE) && (jeu->argent >= TOUR_5_COUT)) {
+      jeu->argent -= TOUR_5_COUT;
+      jeu->carte[posY][posX].element = CASE_PRISE;
+      wprintw(interface->infos->interieur, "\nTour 5 posee... pour de faux !");
+      jeu->carte[posY][posX].type_unite = UNITE_TOUR;
+      mvwaddch(interface->carte->interieur, posY, posX, 'T');
+      interface_MAJOutils(interface, jeu);
+      interface_MAJEtat(interface, jeu);
+      interface_MAJAttaques(interface, jeu);
+    }
+    else {
+      wprintw(interface->infos->interieur, "\nDesole, pas possible...");
+    }
+    break;
+  case OUTIL_UNFREEZE:
+    if(jeu->freeze == 10) {
+      jeu->freeze = 0;
+      wprintw(interface->infos->interieur, "\nFREEEEEZE !!!");
+      interface_MAJEtat(interface, jeu);
+    }
+    else {
+      interface->outilsel = OUTIL_NONE;
+      wprintw(interface->infos->interieur, "\nDesole, pas possible...");
+    }
+    interface_MAJOutils(interface, jeu);
+    break;
+  }
+  wrefresh(interface->infos->interieur);
+  wrefresh(interface->carte->interieur);
 }
 
 /**

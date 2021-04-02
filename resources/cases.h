@@ -3,7 +3,8 @@
 
 typedef struct case_t {
   int element;
-  pthread_t *unite;
+  int type_unite;
+  pthread_t * unite;
   pthread_mutex_t mutex;
 } case_t;
 
@@ -15,6 +16,7 @@ typedef struct case_t {
 #define CASE_MAX_CHEMIN 229
 #define CASE_ORDI       254
 #define CASE_FORT       255
+#define CASE_PRISE      256
 
 /* Couleurs des cases */
 #define COULEUR_VIDE      2
@@ -22,5 +24,14 @@ typedef struct case_t {
 #define COULEUR_CHEMIN    3
 #define COULEUR_JOUEUR    6
 #define COULEUR_ORDI      6
+
+/* Type d'unite*/
+#define UNITE_SOLDAT   0
+#define UNITE_COMMANDO 1
+#define UNITE_VEHICULE 2
+#define UNITE_MISSILE  3
+#define UNITE_CHAR     4
+#define UNITE_TOUR     5
+#define UNITE_FORT     6
 
 #endif

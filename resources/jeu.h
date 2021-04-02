@@ -32,7 +32,16 @@ typedef struct {
   unsigned int unfreeze;         /* Etat unfreeze */
 } jeu_t;
 
+/* Structure protégée comportant le nombre de freeze*/
+typedef struct freeze_t {
+  int nb_freeze;
+  pthread_mutex_t mutex;
+  pthread_cond_t cond;
+} freeze_p;
+
 void initialiser_plateau(jeu_t * jeu);
+void * thread_tour(void * arg);
+void creation_thread(int unite_thread, jeu_t * jeu, int posY, int posX);
 
 /* Constantes d'initialisation du jeu */
 #define VIE_DEFAUT 10

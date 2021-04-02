@@ -28,7 +28,7 @@ CCFLAGS_STD = -Wall -O3 -Werror -ansi -pedantic
 CCFLAGS_MACOS = -I/usr/local/opt/ncurses/include
 CCFLAGS_DEBUG = -D _DEBUG_
 CCFLAGS = $(CCFLAGS_STD)
-CCLIBS = -lncurses 
+CCLIBS = -lncurses -lpthread
 CCLIBS_MACOS = -L/usr/local/opt/ncurses/lib
 
 #

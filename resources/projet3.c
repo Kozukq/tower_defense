@@ -10,12 +10,16 @@
 #include "jeu.h"
 #include "interface.h"
 
+freeze_p freeze = {FREEZE_DEFAUT, PTHREAD_MUTEX_INITIALIZER, PTHREAD_COND_INITIALIZER};
+freeze_p unfreeze = {UNFREEZE_DEFAUT, PTHREAD_MUTEX_INITIALIZER, PTHREAD_COND_INITIALIZER};
+
 int main() {
   int ch;
   interface_t interface;
   bool quitter = FALSE;
   jeu_t jeu;
   initialiser_plateau(&jeu);
+  
 
   /* Initialisation de ncurses */
   ncurses_initialiser();

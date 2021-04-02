@@ -1,19 +1,20 @@
-#include <stdlib.h> /* EXIT_SUCCESS, EXIT_FAILURE */
-#include <stdio.h> /* fprintf() */
-#include <sys/socket.h> /* socket() */
-#include <string.h> /* strerror(), memset() */
-#include <errno.h> /* errno */
-#include <arpa/inet.h> /* htons(), inet_pton() */
-#include <unistd.h> /* close() */
+#include <stdlib.h> 	/* EXIT_SUCCESS, EXIT_FAILURE */
+#include <stdio.h> 		/* fprintf() */
+#include <sys/socket.h>	/* socket() */
+#include <string.h> 	/* strerror(), memset() */
+#include <errno.h> 		/* errno */
+#include <arpa/inet.h> 	/* htons(), inet_pton() */
+#include <unistd.h> 	/* close() */
 #include "network.h"
+#include "config.h"
 
 int main(int argc, char* argv[]) {
 
 	int sockfd;
 	int status;
-	int value;
-	int i;
-	char* map_list[3];
+	int msg;
+	int response;
+	char config_list[256];
 	struct sockaddr_in server;
 
 	/* vérification des arguments */
@@ -40,29 +41,65 @@ int main(int argc, char* argv[]) {
 	}
 
 	/* menu principal */
-	fprintf(stdout,"MENU\n1 : Start a game\n2 : See maps\n3 : See scenarios\n4 : See lobbies\n");
-	fscanf(stdin,"%d",&value);
-
-	/* envoi au serveur : choix menu */
-	fprintf(stdout,"sending..\n");
-	status = sendto(sockfd,&value,sizeof(value),0,(struct sockaddr*)&server,sizeof(struct sockaddr_in));
-	if(status == -1) {
-		fprintf(stderr,"%s (sending to the server)\n",strerror(errno));
-		exit(EXIT_FAILURE);		
+	fprintf(stdout,"┌------MENU------┐\n");
+	fprintf(stdout,"|  New Game (1)  |\n");
+	fprintf(stdout,"|    Join (2)    |\n");
+	fprintf(stdout,"└----------------┘\n");
+	fprintf(stdout,">");
+	fscanf(stdin,"%d",&msg);
+	if(!((msg == NEW_GAME) || (msg == JOIN_GAME))) {
+		fprintf(stderr,"Wrong input\n");
+		exit(EXIT_FAILURE);
 	}
 
-	/* réception du serveur */
+	/* envoi serveur : choix menu */
+	if(DEBUG) fprintf(stdout,"sending..\n");
+	status = sendto(sockfd,&msg,sizeof(msg),0,(struct sockaddr*)&server,sizeof(struct sockaddr_in));
+	if(status == -1) {
+			fprintf(stderr,"%s (sending to the server)\n",strerror(errno));
+			exit(EXIT_FAILURE);		
+	}
+
+	/* réception serveur : acknowledgment */
 	fprintf(stdout,"..waiting\n");
-	status = recvfrom(sockfd,&map_list,sizeof(map_list),0,NULL,NULL);
+	status = recvfrom(sockfd,&response,sizeof(response),0,NULL,NULL);
 	if(status == -1) {
 		fprintf(stderr,"%s (receiving from the server)\n",strerror(errno));
 		exit(EXIT_FAILURE);		
 	}
 
-	/* affichage */
-	for(i = 0; i < 3; i++) {
-		fprintf(stdout,"%s\n",map_list[i]);
+	/* traitement */
+	if(response == DECLINE) {
+		fprintf(stderr,"The server rejected the query\n");
+		exit(EXIT_FAILURE);
 	}
+
+	if(msg == NEW_GAME) {
+		
+		/* réception serveur : liste de configuration */
+		fprintf(stdout,"..waiting\n");
+		status = recvfrom(sockfd,config_list,sizeof(config_list),0,NULL,NULL);
+		if(status == -1) {
+			fprintf(stderr,"%s (receiving from the server)\n",strerror(errno));
+			exit(EXIT_FAILURE);		
+		}
+
+		/* choix de la configuration */
+		fprintf(stdout,"%s\n",config_list);
+		fprintf(stdout,">");
+		fscanf(stdin,"%d",&msg);
+		
+		/* envoi serveur : choix de configuration */
+		if(DEBUG) fprintf(stdout,"sending..\n");
+		status = sendto(sockfd,&msg,sizeof(msg),0,(struct sockaddr*)&server,sizeof(struct sockaddr_in));
+		if(status == -1) {
+				fprintf(stderr,"%s (sending to the server)\n",strerror(errno));
+				exit(EXIT_FAILURE);		
+		}		
+	}
+	
+	/* réception serveur : port TCP */
+
 
 	/* fermeture de la socket */
 	status = close(sockfd);

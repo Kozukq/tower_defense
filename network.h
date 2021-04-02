@@ -1,9 +1,13 @@
 #ifndef NETWORK_H
 #define NETWORK_H
 
+#define FALSE 0
+#define TRUE 1
+
+#define ACCEPT 0
+#define DECLINE 1
+
 #define NEW_GAME 1
-#define GET_MAPS 2
-#define GET_SCENARIOS 3
-#define GET_LOBBIES 4
+#define JOIN_GAME 2
 
 #endif

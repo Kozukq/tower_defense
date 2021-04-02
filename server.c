@@ -1,22 +1,41 @@
-#include <stdlib.h> /* EXIT_SUCCESS, EXIT_FAILURE */
-#include <stdio.h> /* fprintf() */
+#include <stdlib.h> 	/* EXIT_SUCCESS, EXIT_FAILURE */
+#include <stdio.h> 		/* fprintf() */
 #include <sys/socket.h> /* socket() */
-#include <string.h> /* strerror(), memset() */
-#include <errno.h> /* errno */
-#include <arpa/inet.h> /* htons(), htonl() */
-#include <unistd.h> /* close() */
+#include <string.h> 	/* strerror(), memset() */
+#include <errno.h> 		/* errno */
+#include <arpa/inet.h> 	/* htons(), htonl() */
+#include <unistd.h> 	/* close() */
 #include "network.h"
+#include "config.h"
 
 int main(int argc, char* argv[]) {
 	
 	int sockfd;
 	int status;
-	int value;
+	int msg;
+	int is_launched;
 	socklen_t addrlen;
 	char buffer[256];
-	char* map_list[3];
+	char config_list[256];
 	struct sockaddr_in server;
 	struct sockaddr_in client;
+
+	/* test chargement de la config */
+	int i;
+	struct config config;
+	load("./",&config);
+	for(i = 0; i < 15; i++) {
+		if(config.scenarios[2].events[i].type == 0) {
+			fprintf(stdout,"%llu,%d,%s\n",config.scenarios[2].events[i].duration,config.scenarios[2].events[i].type,config.scenarios[2].events[i].value.text);
+		}
+		else {
+			fprintf(stdout,"%llu,%d,%d\n",config.scenarios[2].events[i].duration,config.scenarios[2].events[i].type,config.scenarios[2].events[i].value.number);
+		}
+	}
+
+	/* initialisations */
+	is_launched = FALSE;
+	addrlen = sizeof(struct sockaddr_in);
 
 	/* vérification des arguments */
 	if(argc != 2) {
@@ -49,39 +68,91 @@ int main(int argc, char* argv[]) {
 		fprintf(stderr,"%s (server address to char*)\n",strerror(errno));
 		exit(EXIT_FAILURE);
 	}
-	fprintf(stdout,"Access this server via %s:%d\n",buffer,atoi(argv[1]));
+	if(DEBUG) fprintf(stdout,"Access this server via %s:%d\n",buffer,atoi(argv[1]));
 
 	/* chargement des données */
-	strcat(map_list[0],"Easy");
-	strcat(map_list[1],"Medium");
-	strcat(map_list[2],"Hard");
+	memset(config_list,0,sizeof(config_list));
+	strcat(config_list,"Maps : easy(1), hard(2), medium(3)\n");
+	strcat(config_list,"Scenarios : infini(1), pognon(2), tranquille(3)");
 
-	/* réception du client : choix menu */
-	fprintf(stdout,"..waiting\n");
+	/* réception client : choix menu */
+	if(DEBUG) fprintf(stdout,"..waiting connection\n");
 	addrlen = sizeof(struct sockaddr_in);
-	status = recvfrom(sockfd,&value,sizeof(value),0,(struct sockaddr*)&client,&addrlen);
+	status = recvfrom(sockfd,&msg,sizeof(msg),0,(struct sockaddr*)&client,&addrlen);
 	if(status == -1) {
 		fprintf(stderr,"%s (receiving from the client)\n",strerror(errno));
 		exit(EXIT_FAILURE);		
 	}
 
-	/* traitement */
-	switch(value) {
-		case NEW_GAME:
-			break;
-		case GET_MAPS:
-			fprintf(stdout,"sending..\n");
-			status = sendto(sockfd,&map_list,sizeof(map_list),0,(struct sockaddr*)&client,sizeof(struct sockaddr_in));
-			if(status == -1) {
-				fprintf(stderr,"%s (sending to the server)\n",strerror(errno));
-				exit(EXIT_FAILURE);		
-			}
-			break;
-		case GET_SCENARIOS:
-			break;
-		case GET_LOBBIES:
-			break;
+	if(msg == NEW_GAME) {
+
+		/* vérification */
+		if(is_launched) {
+			msg = DECLINE;
+		}
+		else {
+			msg = ACCEPT;
+		}
+
+		/* envoi client : acknowledgment */
+		if(DEBUG) fprintf(stdout,"sending..\n");
+		status = sendto(sockfd,&msg,sizeof(msg),0,(struct sockaddr*)&client,sizeof(struct sockaddr_in));
+		if(status == -1) {
+			fprintf(stderr,"%s (sending to the client)\n",strerror(errno));
+			exit(EXIT_FAILURE);		
+		}
+
+		/* en cas de refus */
+		if(is_launched) {
+			fprintf(stderr,"There is already a game launched\n");
+			exit(EXIT_FAILURE);
+		}
+
+		/* envoi client : liste de configuration */
+		if(DEBUG) fprintf(stdout,"sending..\n");
+		status = sendto(sockfd,config_list,sizeof(config_list),0,(struct sockaddr*)&client,sizeof(struct sockaddr_in));
+		if(status == -1) {
+			fprintf(stderr,"%s (sending to the client)\n",strerror(errno));
+			exit(EXIT_FAILURE);		
+		}
+
+		/* réception client : choix de configuration */
+		if(DEBUG) fprintf(stdout,"..waiting\n");
+		status = recvfrom(sockfd,&msg,sizeof(&msg),0,(struct sockaddr*)&client,&addrlen);
+		if(status == -1) {
+			fprintf(stderr,"%s (receiving from the client)\n",strerror(errno));
+			exit(EXIT_FAILURE);		
+		}
+
+		fprintf(stdout,"%d\n",msg);
 	}
+	else if(msg == JOIN_GAME) {
+		
+		/* vérification */
+		if(is_launched) {
+			msg = ACCEPT;
+		}
+		else {
+			msg = DECLINE;
+		}
+
+		/* envoi client : acknowledgment */
+		if(DEBUG) fprintf(stdout,"sending..\n");
+		status = sendto(sockfd,&msg,sizeof(msg),0,(struct sockaddr*)&client,sizeof(struct sockaddr_in));
+		if(status == -1) {
+			fprintf(stderr,"%s (sending to the client)\n",strerror(errno));
+			exit(EXIT_FAILURE);		
+		}
+
+		/* en cas de refus */
+		if(!is_launched) {
+			fprintf(stderr,"No game launched yet\n");
+			exit(EXIT_FAILURE);
+		}
+	}
+
+	/* envoi client : port TCP */
+
 
 	/* fermeture de la socket */
 	status = close(sockfd);

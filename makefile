@@ -10,7 +10,7 @@
 #
 
 EXEC = server client
-OBJETS =
+OBJETS = config.o
 NOM_PROJET = tower_defense
 
 #
@@ -102,5 +102,6 @@ archive: clean
 	@echo "Termine."
 
 # DEPENDANCES
-server.o: server.c
-client.o: client.c
+config.o: config.c config.h
+server.o: server.c network.h config.h
+client.o: client.c network.h config.h

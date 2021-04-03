@@ -13,11 +13,31 @@
 freeze_p freeze = {FREEZE_DEFAUT, PTHREAD_MUTEX_INITIALIZER, PTHREAD_COND_INITIALIZER};
 freeze_p unfreeze = {UNFREEZE_DEFAUT, PTHREAD_MUTEX_INITIALIZER, PTHREAD_COND_INITIALIZER};
 
-interface_t interface;
-jeu_t jeu;
+typedef struct interface_protegee{
+  interface_t interface;
+  pthread_mutex_t mutex;
+} interface_p;
+typedef struct jeu_protegee{
+  jeu_t jeu;
+  pthread_mutex_t mutex;
+} jeu_p;
+
+interface_p interface;
+jeu_p jeu;
 
 void * creation_interface(void * arg){
-  fprintf(stderr, "Demarrage du thread");
+  int ch, retour;
+  bool quitter = FALSE;
+  retour = pthread_mutex_init(&interface.mutex, NULL);
+  if(retour != 0){
+    fprintf(stderr,"Problème lors de l'initialisation du mutex de l'interface\n");
+    exit(EXIT_FAILURE);
+  }
+  retour = pthread_mutex_init(&jeu.mutex, NULL);
+  if(retour != 0){
+    fprintf(stderr,"Problème lors de l'initialisation du mutex du jeu\n");
+    exit(EXIT_FAILURE);
+  }
   /* Initialisation de ncurses */
   ncurses_initialiser();
   ncurses_souris();
@@ -35,38 +55,36 @@ void * creation_interface(void * arg){
       exit(EXIT_FAILURE);
   }
   /* Création de l'interface*/
-  interface = interface_creer(&jeu);
-  return (void*) 3;
+  interface.interface = interface_creer(&jeu.jeu);
+    /* Boucle principale */
+  while(quitter == FALSE) {
+    ch = getch();
+    if((ch == 'Q') || (ch == 'q'))
+      quitter = true;
+    else
+      interface_main(&interface.interface, &jeu.jeu, ch);
+  }
+    
+    /* Suppression de l'interface */
+  interface_supprimer(&interface.interface);
+
+      /* Arrêt de ncurses */
+  ncurses_stopper();
+  return (void*) NULL;
   
 }
 
 int main() {
-  int ch, status;
-  bool quitter = FALSE;
+  int status;
   pthread_t thread_affichage;
-  initialiser_plateau(&jeu);
+  initialiser_plateau(&jeu.jeu);
   status = pthread_create(&thread_affichage, NULL, creation_interface, NULL);
   if(status != 0){
     fprintf(stderr, "Erreur lors de la création du thread d'affichage");
     perror("PTHREAD_CREATE");
     exit(EXIT_FAILURE);
   }
-  fprintf(stdout,"Après création du thread");
   pthread_join(thread_affichage, NULL);
-  /* Boucle principale */
-  while(quitter == FALSE) {
-    ch = getch();
-    if((ch == 'Q') || (ch == 'q'))
-      quitter = true;
-    else
-      interface_main(&interface, &jeu, ch);
-  }
-    
-    /* Suppression de l'interface */
-  interface_supprimer(&interface);
-    
-    /* Arrêt de ncurses */
-  ncurses_stopper();
   
   return EXIT_SUCCESS;
 }

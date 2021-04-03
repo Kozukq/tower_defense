@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <ncurses.h>
-#include "../carte.h"
+#include "../config.h"
 #include "cases.h"
 
 #define NB_LIG_CARTE 15 /*Le nombre de lignes de la carte*/
@@ -18,12 +18,9 @@
  * Pour le projet, vous pouvez/devez le faire différemment...
  */
 
-
-/*int nb_fourmis; -> inutile pour le moment, à voir plus tard ?
-  pthread_mutex_t mutex_nb_fourmis;*/
 /* La structure contenant les informations sur le jeu */
 typedef struct {
-  carte carte_entiere;   /* La carte -> peut être inutile ?*/
+  struct map carte_entiere;   /* La carte -> peut être inutile ?*/
   case_t carte[NB_LIG_CARTE][NB_COL_CARTE];
   unsigned int vies;             /* Vies du joueur */
   unsigned int adv[3];           /* Vies des adversaires */

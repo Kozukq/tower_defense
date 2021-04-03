@@ -47,6 +47,17 @@ void * thread_tour(void * arg){
   pthread_exit(c);
 }
 
+void * thread_unite(void * arg){
+  char * c = "Hello";
+  pthread_exit(c);
+}
+
 void creation_thread(int type_unite, jeu_t * jeu, int posY, int posX){
-  pthread_create(jeu->carte[posY][posX].unite, NULL, thread_tour, NULL);
+  int status;
+  status = pthread_create(jeu->carte[posY][posX].unite, NULL, thread_tour, NULL);
+  if(status != 0){
+    fprintf(stderr,"\nErreur lors de la création d'un thread");
+    perror("PTHREAD_CREATE");
+    exit(-1);
+  }
 }

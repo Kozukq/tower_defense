@@ -27,18 +27,8 @@ jeu_p jeu;
 
 /*Routine de création et de gestion d'interface*/
 void * creation_interface(void * arg){
-  int ch, retour;
+  int ch;
   bool quitter = FALSE;
-  retour = pthread_mutex_init(&interface.mutex, NULL);
-  if(retour != 0){
-    fprintf(stderr,"Problème lors de l'initialisation du mutex de l'interface\n");
-    exit(EXIT_FAILURE);
-  }
-  retour = pthread_mutex_init(&jeu.mutex, NULL);
-  if(retour != 0){
-    fprintf(stderr,"Problème lors de l'initialisation du mutex du jeu\n");
-    exit(EXIT_FAILURE);
-  }
   /* Initialisation de ncurses */
   ncurses_initialiser();
   ncurses_souris();
@@ -55,12 +45,14 @@ void * creation_interface(void * arg){
 	    COLS, LINES, LARGEUR, HAUTEUR);
     exit(EXIT_FAILURE);
   }
+  
   /* Création de l'interface*/
   pthread_mutex_lock(&interface.mutex);
   pthread_mutex_lock(&jeu.mutex);
   interface.interface = interface_creer(&jeu.jeu);
   pthread_mutex_unlock(&interface.mutex);
   pthread_mutex_unlock(&jeu.mutex);
+  
   /* Boucle principale */
   while(quitter == FALSE) {
     ch = getch();
@@ -86,9 +78,25 @@ void * creation_interface(void * arg){
 
 /*Fonction principale - Appelle le thread de création d'interface */
 int main() {
-  int status;
+  int status, retour;
   pthread_t thread_affichage;
+  
+  /*Création des mutex de l'interface et du jeu*/
+  retour = pthread_mutex_init(&interface.mutex, NULL);
+  if(retour != 0){
+    fprintf(stderr,"Problème lors de l'initialisation du mutex de l'interface\n");
+    exit(EXIT_FAILURE);
+  }
+  retour = pthread_mutex_init(&jeu.mutex, NULL);
+  if(retour != 0){
+    fprintf(stderr,"Problème lors de l'initialisation du mutex du jeu\n");
+    exit(EXIT_FAILURE);
+  }
+
+  /*Initialisation du plateau*/
+  pthread_mutex_lock(&jeu.mutex);
   initialiser_plateau(&jeu.jeu);
+  pthread_mutex_unlock(&jeu.mutex);
   status = pthread_create(&thread_affichage, NULL, creation_interface, NULL);
   if(status != 0){
     fprintf(stderr, "Erreur lors de la création du thread d'affichage");

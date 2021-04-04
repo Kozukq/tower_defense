@@ -28,9 +28,6 @@ void initialiser_plateau(jeu_t * jeu) {
     jeu -> adv[i] = VIE_DEFAUT;
   }
   
-  /* nb_fourmis = 0; -> inutile pour l'instant ?
-     pthread_mutex_init(&mutex_nb_fourmis, NULL);*/
-  
   for (i = 0; i < NB_LIG_CARTE; i++) {	/* Initialisation des cases du plateau */
     for (j = 0; j < NB_COL_CARTE; j++) {
       case_t case_plateau;

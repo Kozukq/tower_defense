@@ -40,13 +40,11 @@ void initialiser_plateau(jeu_t * jeu) {
 }
 
 void * thread_tour(void * arg){
-  char * c = "Hello";
-  pthread_exit(c);
+  pthread_exit(NULL);
 }
 
 void * thread_unite(void * arg){
-  char * c = "Hello";
-  pthread_exit(c);
+  pthread_exit(NULL);
 }
 
 void creation_thread(int type_unite, jeu_t * jeu, int posY, int posX){

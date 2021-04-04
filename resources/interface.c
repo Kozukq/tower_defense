@@ -1,6 +1,7 @@
 #include "fenetre.h"
 #include "ncurses.h"
 #include "jeu.h"
+#include "unite.h"
 #include  <pthread.h>
 #include <stdlib.h>
 #include <stdio.h>

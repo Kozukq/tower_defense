@@ -2,13 +2,14 @@
 #define UNITE_H
 
 typedef struct unite_t{
-  int cout;
   int vie;
   int deplacement;
 } unite;
 
 typedef struct tour_t{
-  int cout;
-  int degat;
+  int tir_min;
+  int tir_max;
+  int portee;
+  int vitesse;
 }tour;
 #endif

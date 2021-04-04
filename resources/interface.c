@@ -425,7 +425,8 @@ void interface_carte(interface_t *interface, jeu_t *jeu, int posX, int posY) {
       wprintw(interface->infos->interieur, "\nTour 1 posee... pour de faux !");
       jeu->carte[posY][posX].type_unite = UNITE_TOUR;
       mvwaddch(interface->carte->interieur, posY, posX, 'T');
-      /*creation_thread(UNITE_TOUR, jeu, posY, posX)*/
+      /*creation_thread(UNITE_TOUR, jeu, posY, posX);*/
+      /*pthread_create(jeu->carte[posY][posX].unite, NULL, thread_tour, NULL);*/
       interface_MAJOutils(interface, jeu);
       interface_MAJEtat(interface, jeu);
       interface_MAJAttaques(interface, jeu);

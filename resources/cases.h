@@ -1,10 +1,13 @@
 #ifndef CASES_H
 #define CASES_H
 
+#include "unite.h"
+
 typedef struct case_t {
   int element;
   int type_unite;
-  pthread_t * unite;
+  unite unite;
+  tour tour;
   pthread_mutex_t mutex;
 } case_t;
 

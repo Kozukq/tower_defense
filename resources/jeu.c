@@ -32,7 +32,7 @@ void initialiser_plateau(jeu_t * jeu) {
     for (j = 0; j < NB_COL_CARTE; j++) {
       case_t case_plateau;
       case_plateau.element = grille[i][j];
-      case_plateau.unite = NULL;
+      /*case_plateau.unite = NULL;*/
       pthread_mutex_init(&case_plateau.mutex, NULL);
       jeu -> carte[i][j] = case_plateau;
     }
@@ -48,11 +48,13 @@ void * thread_unite(void * arg){
 }
 
 void creation_thread(int type_unite, jeu_t * jeu, int posY, int posX){
-  int status;
+  /*int status;
+  pthread_mutex_lock(&jeu->carte[posY][posX].mutex);
   status = pthread_create(jeu->carte[posY][posX].unite, NULL, thread_tour, NULL);
+  pthread_mutex_unlock(&jeu->carte[posY][posX].mutex);
   if(status != 0){
     fprintf(stderr,"\nErreur lors de la création d'un thread");
     perror("PTHREAD_CREATE");
     exit(-1);
-  }
+    }*/
 }

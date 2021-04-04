@@ -13,15 +13,6 @@
 freeze_p freeze = {FREEZE_DEFAUT, PTHREAD_MUTEX_INITIALIZER, PTHREAD_COND_INITIALIZER};
 freeze_p unfreeze = {UNFREEZE_DEFAUT, PTHREAD_MUTEX_INITIALIZER, PTHREAD_COND_INITIALIZER};
 
-typedef struct interface_protegee{
-  interface_t interface;
-  pthread_mutex_t mutex;
-} interface_p;
-typedef struct jeu_protegee{
-  jeu_t jeu;
-  pthread_mutex_t mutex;
-} jeu_p;
-
 interface_p interface;
 jeu_p jeu;
 

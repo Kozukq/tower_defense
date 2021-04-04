@@ -29,6 +29,12 @@ typedef struct {
   unsigned int unfreeze;         /* Etat unfreeze */
 } jeu_t;
 
+/*Structure de jeu protégée*/
+typedef struct jeu_protegee{
+  jeu_t jeu;
+  pthread_mutex_t mutex;
+} jeu_p;
+
 /* Structure protégée comportant le nombre de freeze*/
 typedef struct freeze_t {
   int nb_freeze;

@@ -55,6 +55,12 @@ typedef struct {
     unsigned int outilsel; /* L'outil sélectionné */
 } interface_t;
 
+/*Structure d'interface protégée*/
+typedef struct interface_protegee{
+  interface_t interface;
+  pthread_mutex_t mutex;
+} interface_p;
+
 /**
  * Définition de la palette.
  */

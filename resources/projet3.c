@@ -55,7 +55,11 @@ void * creation_interface(void * arg){
       exit(EXIT_FAILURE);
   }
   /* Création de l'interface*/
+  pthread_mutex_lock(&interface.mutex);
+  pthread_mutex_lock(&jeu.mutex);
   interface.interface = interface_creer(&jeu.jeu);
+  pthread_mutex_unlock(&interface.mutex);
+  pthread_mutex_unlock(&jeu.mutex);
     /* Boucle principale */
   while(quitter == FALSE) {
     ch = getch();

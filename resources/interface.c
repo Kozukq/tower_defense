@@ -396,6 +396,7 @@ void interface_attaques(interface_t *interface, jeu_t *jeu, int posX, int posY) 
  * @param posY la position Y du clic dans la fenêtre
  */
 void interface_carte(interface_t *interface, jeu_t *jeu, int posX, int posY) {
+  pthread_mutex_lock(&jeu->carte[posY][posX].mutex);
   switch(interface->outilsel) {
   case OUTIL_NONE:
     /* Pas d'outils sélectionné : on affiche le contenu de la case */
@@ -420,13 +421,21 @@ void interface_carte(interface_t *interface, jeu_t *jeu, int posX, int posY) {
     break;
   case OUTIL_TOUR_1:
     if((jeu->carte[posY][posX].element == CASE_VIDE) && (jeu->argent >= TOUR_1_COUT)) {
+      int status;
+      tour tour1 = {TOUR_1_TIR_MIN, TOUR_1_TIR_MAX, TOUR_1_PORTEE, TOUR_1_VITESSE};
+      pthread_t thread;
       jeu->argent -= TOUR_1_COUT;
       jeu->carte[posY][posX].element = CASE_PRISE;
       wprintw(interface->infos->interieur, "\nTour 1 posee... pour de faux !");
       jeu->carte[posY][posX].type_unite = UNITE_TOUR;
       mvwaddch(interface->carte->interieur, posY, posX, 'T');
-      /*creation_thread(UNITE_TOUR, jeu, posY, posX);*/
-      /*pthread_create(jeu->carte[posY][posX].unite, NULL, thread_tour, NULL);*/
+      jeu->carte[posY][posX].tour = tour1;
+      status = pthread_create(&thread, NULL, thread_tour, NULL);
+      if(status != 0){
+	fprintf(stderr,"\nErreur lors de la création d'un thread");
+	perror("PTHREAD_CREATE");
+	exit(-1);
+      }
       interface_MAJOutils(interface, jeu);
       interface_MAJEtat(interface, jeu);
       interface_MAJAttaques(interface, jeu);
@@ -508,6 +517,7 @@ void interface_carte(interface_t *interface, jeu_t *jeu, int posX, int posY) {
     interface_MAJOutils(interface, jeu);
     break;
   }
+  pthread_mutex_unlock(&jeu->carte[posY][posX].mutex);
   wrefresh(interface->infos->interieur);
   wrefresh(interface->carte->interieur);
 }

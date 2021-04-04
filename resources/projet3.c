@@ -25,6 +25,7 @@ typedef struct jeu_protegee{
 interface_p interface;
 jeu_p jeu;
 
+/*Routine de création et de gestion d'interface*/
 void * creation_interface(void * arg){
   int ch, retour;
   bool quitter = FALSE;
@@ -48,11 +49,11 @@ void * creation_interface(void * arg){
 
   /* Vérification des dimensions du terminal */
   if((COLS < LARGEUR) || (LINES < HAUTEUR)) {
-      ncurses_stopper();
-      fprintf(stderr, 
-              "Les dimensions du terminal sont insufisantes : l=%d,h=%d au lieu de l=%d,h=%d\n", 
-              COLS, LINES, LARGEUR, HAUTEUR);
-      exit(EXIT_FAILURE);
+    ncurses_stopper();
+    fprintf(stderr, 
+	    "Les dimensions du terminal sont insufisantes : l=%d,h=%d au lieu de l=%d,h=%d\n", 
+	    COLS, LINES, LARGEUR, HAUTEUR);
+    exit(EXIT_FAILURE);
   }
   /* Création de l'interface*/
   pthread_mutex_lock(&interface.mutex);
@@ -60,24 +61,30 @@ void * creation_interface(void * arg){
   interface.interface = interface_creer(&jeu.jeu);
   pthread_mutex_unlock(&interface.mutex);
   pthread_mutex_unlock(&jeu.mutex);
-    /* Boucle principale */
+  /* Boucle principale */
   while(quitter == FALSE) {
     ch = getch();
     if((ch == 'Q') || (ch == 'q'))
       quitter = true;
-    else
+    else{
+      pthread_mutex_lock(&interface.mutex);
+      pthread_mutex_lock(&jeu.mutex);
       interface_main(&interface.interface, &jeu.jeu, ch);
+      pthread_mutex_unlock(&interface.mutex);
+      pthread_mutex_unlock(&jeu.mutex);
+    }
   }
-    
-    /* Suppression de l'interface */
+  
+  /* Suppression de l'interface */
   interface_supprimer(&interface.interface);
-
-      /* Arrêt de ncurses */
+  
+  /* Arrêt de ncurses */
   ncurses_stopper();
   return (void*) NULL;
   
 }
 
+/*Fonction principale - Appelle le thread de création d'interface */
 int main() {
   int status;
   pthread_t thread_affichage;

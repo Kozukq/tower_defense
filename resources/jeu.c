@@ -1,4 +1,6 @@
 #include "jeu.h"
+#include "fenetre.h"
+#include "interface.h"
 #include <string.h>
 
 void initialiser_plateau(jeu_t * jeu) {
@@ -40,6 +42,8 @@ void initialiser_plateau(jeu_t * jeu) {
 }
 
 void * thread_tour(void * arg){
+  interface_t * i = (interface_t* ) arg;
+  wprintw(i->infos->interieur, "\nThread tour ok");
   pthread_exit(NULL);
 }
 

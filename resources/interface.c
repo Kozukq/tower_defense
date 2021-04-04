@@ -430,7 +430,7 @@ void interface_carte(interface_t *interface, jeu_t *jeu, int posX, int posY) {
       jeu->carte[posY][posX].type_unite = UNITE_TOUR;
       mvwaddch(interface->carte->interieur, posY, posX, 'T');
       jeu->carte[posY][posX].tour = tour1;
-      status = pthread_create(&thread, NULL, thread_tour, NULL);
+      status = pthread_create(&thread, NULL, thread_tour, interface);
       if(status != 0){
 	fprintf(stderr,"\nErreur lors de la création d'un thread");
 	perror("PTHREAD_CREATE");

@@ -98,4 +98,4 @@ ncurses.o: ncurses.c ncurses.h
 fenetre.o: fenetre.c fenetre.h
 interface.o: interface.c fenetre.h ncurses.h jeu.h interface.h cases.h
 projet3.o: projet3.c ncurses.h fenetre.h jeu.h interface.h cases.h
-jeu.o : jeu.h jeu.c cases.h
+jeu.o : jeu.h jeu.c cases.h unite.h

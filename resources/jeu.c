@@ -40,25 +40,3 @@ void initialiser_plateau(jeu_t * jeu) {
     }
   }
 }
-
-void * thread_tour(void * arg){
-  interface_t * i = (interface_t* ) arg;
-  wprintw(i->infos->interieur, "\nThread tour ok");
-  pthread_exit(NULL);
-}
-
-void * thread_unite(void * arg){
-  pthread_exit(NULL);
-}
-
-void creation_thread(int type_unite, jeu_t * jeu, int posY, int posX){
-  /*int status;
-  pthread_mutex_lock(&jeu->carte[posY][posX].mutex);
-  status = pthread_create(jeu->carte[posY][posX].unite, NULL, thread_tour, NULL);
-  pthread_mutex_unlock(&jeu->carte[posY][posX].mutex);
-  if(status != 0){
-    fprintf(stderr,"\nErreur lors de la création d'un thread");
-    perror("PTHREAD_CREATE");
-    exit(-1);
-    }*/
-}

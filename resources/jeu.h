@@ -44,7 +44,7 @@ typedef struct freeze_t {
 
 void initialiser_plateau(jeu_t * jeu);
 void * thread_tour(void * arg);
-void creation_thread(int unite_thread, jeu_t * jeu, int posY, int posX);
+void * thread_unite(void * arg);
 
 /* Constantes d'initialisation du jeu */
 #define VIE_DEFAUT 10

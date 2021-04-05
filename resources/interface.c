@@ -2,6 +2,7 @@
 #include "ncurses.h"
 #include "jeu.h"
 #include "unite.h"
+#include "threads.h"
 #include  <pthread.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -423,17 +424,22 @@ void interface_carte(interface_t *interface, jeu_t *jeu, int posX, int posY) {
     if((jeu->carte[posY][posX].element == CASE_VIDE) && (jeu->argent >= TOUR_1_COUT)) {
       int status;
       tour tour1 = {TOUR_1_TIR_MIN, TOUR_1_TIR_MAX, TOUR_1_PORTEE, TOUR_1_VITESSE};
+      thread_tour_arg arg;
       pthread_t thread;
+      tour1.posY = posY;
+      tour1.posX = posX;
       jeu->argent -= TOUR_1_COUT;
       jeu->carte[posY][posX].element = CASE_PRISE;
-      wprintw(interface->infos->interieur, "\nTour 1 posee... pour de faux !");
+      wprintw(interface->infos->interieur, "\nTour 1 posee.");
       jeu->carte[posY][posX].type_unite = UNITE_TOUR;
       mvwaddch(interface->carte->interieur, posY, posX, 'T');
       jeu->carte[posY][posX].tour = tour1;
-      status = pthread_create(&thread, NULL, thread_tour, interface);
+      arg.tour = &tour1;
+      arg.jeu = jeu;
+      arg.interface = interface;
+      status = pthread_create(&thread, NULL, thread_tour, &arg);
       if(status != 0){
 	fprintf(stderr,"\nErreur lors de la création d'un thread");
-	perror("PTHREAD_CREATE");
 	exit(-1);
       }
       interface_MAJOutils(interface, jeu);

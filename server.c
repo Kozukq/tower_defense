@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) {
 				}
 
 				/* en cas de refus */
-				if(is_launched) {
+				if(msg == DECLINE) {
 					fprintf(stderr,"There is too much games running : %d/%d\n",MAX_GAMES,MAX_GAMES);
 					continue;
 				}

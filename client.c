@@ -76,7 +76,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	/* réception serveur : acknowledgment */
-	fprintf(stdout,"..waiting\n");
+	if(DEBUG) fprintf(stdout,"..waiting\n");
 	status = recvfrom(udp_sockfd,&response,sizeof(response),0,NULL,NULL);
 	if(status == -1) {
 		fprintf(stderr,"%s (receiving from the server)\n",strerror(errno));
@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
 	if(msg == NEW_GAME) {
 		
 		/* réception serveur : liste de configuration */
-		fprintf(stdout,"..waiting\n");
+		if(DEBUG) fprintf(stdout,"..waiting\n");
 		status = recvfrom(udp_sockfd,config_list,sizeof(config_list),0,NULL,NULL);
 		if(status == -1) {
 			fprintf(stderr,"%s (receiving from the server)\n",strerror(errno));
@@ -115,6 +115,7 @@ int main(int argc, char* argv[]) {
 	else if(msg == JOIN_GAME) {
 
 		/* réception serveur : liste des parties */
+		if(DEBUG) fprintf(stdout,"..waiting\n");
 		status = recvfrom(udp_sockfd,games,sizeof(int) * MAX_GAMES,0,NULL,NULL);
 		if(status == -1) {
 			fprintf(stderr,"%s (receiving from the server)\n",strerror(errno));
@@ -142,7 +143,7 @@ int main(int argc, char* argv[]) {
 	}
 	
 	/* réception serveur : port TCP */
-	fprintf(stdout,"..waiting\n");
+	if(DEBUG) fprintf(stdout,"..waiting\n");
 	status = recvfrom(udp_sockfd,&msg,sizeof(msg),0,NULL,NULL);
 	if(status == -1) {
 		fprintf(stderr,"%s (receiving from the server)\n",strerror(errno));
@@ -174,6 +175,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	/* réception serveur : carte de jeu */
+	if(DEBUG) fprintf(stdout,"..waiting\n");
 	status = read(tcp_sockfd,&map,sizeof(struct map));
 	if(status == -1) {
 		fprintf(stderr,"%s (receiving from the server)\n",strerror(errno));
@@ -181,6 +183,7 @@ int main(int argc, char* argv[]) {
 	}	
 
 	/* réception serveur : scénario de jeu */
+	if(DEBUG) fprintf(stdout,"..waiting\n");
 	status = read(tcp_sockfd,&scenario,sizeof(struct scenario));
 	if(status == -1) {
 		fprintf(stderr,"%s (receiving from the server)\n",strerror(errno));

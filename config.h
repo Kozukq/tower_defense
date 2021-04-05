@@ -1,9 +1,10 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include <stdint.h> /* nécessaire pour gérer les types à taille fixe sur Linux apparemment */
-
+#define _DEFAULT_SOURCE
 #define DEBUG 1
+
+#include <stdint.h> /* nécessaire pour gérer les types à taille fixe sur Linux apparemment */
 
 struct map {
 	uint8_t board[15][15];

@@ -3,6 +3,7 @@
 #include <dirent.h> 	/* opendir() */
 #include <string.h> 	/* strerror(), strcat() */
 #include <errno.h> 		/* errno */
+#include <sys/types.h>	/* lstat() */
 #include <sys/stat.h> 	/* open() */
 #include <fcntl.h> 		/* open() */
 #include <unistd.h> 	/* close() */

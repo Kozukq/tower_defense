@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include <stdlib.h> 	/* EXIT_SUCCESS, EXIT_FAILURE */
 #include <stdio.h> 		/* fprintf() */
 #include <dirent.h> 	/* opendir() */
@@ -7,7 +9,6 @@
 #include <sys/stat.h> 	/* open() */
 #include <fcntl.h> 		/* open() */
 #include <unistd.h> 	/* close() */
-#include "config.h"
 
 void load(char* dirpath, struct config* config) {
 

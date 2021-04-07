@@ -1,3 +1,5 @@
+#include "network.h"
+
 #include <stdlib.h> 	/* EXIT_SUCCESS, EXIT_FAILURE */
 #include <stdio.h> 		/* fprintf() */
 #include <sys/socket.h>	/* socket() */
@@ -5,7 +7,6 @@
 #include <errno.h> 		/* errno */
 #include <arpa/inet.h> 	/* htons(), inet_pton() */
 #include <unistd.h> 	/* close() */
-#include "network.h"
 
 int main(int argc, char* argv[]) {
 

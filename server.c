@@ -1,3 +1,5 @@
+#include "network.h"
+
 #include <stdlib.h> 	/* EXIT_SUCCESS, EXIT_FAILURE */
 #include <stdio.h> 		/* fprintf() */
 #include <sys/socket.h> /* socket() */
@@ -6,14 +8,12 @@
 #include <arpa/inet.h> 	/* htons(), htonl() */
 #include <unistd.h> 	/* close() */
 #include <pthread.h>	/* pthread_create(), pthread_join() */
-#include "network.h"
 
 int main(int argc, char* argv[]) {
 	
 	int sockfd;
 	int status;
 	int msg;
-	int is_launched;
 	socklen_t client_addrlen;
 	int games[MAX_GAMES];
 	pthread_t gamethreads[MAX_GAMES]; 
@@ -25,8 +25,8 @@ int main(int argc, char* argv[]) {
 	struct game* game;
 
 	/* initialisations */
-	is_launched = FALSE;
 	memset(games,0,sizeof(games));
+	game = NULL;
 
 	/* vérification des arguments */
 	if(argc != 2) {

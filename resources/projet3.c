@@ -3,6 +3,7 @@
  * @author Cyril Rabat
  **/
 
+#define _POSIX_C_SOURCE 199506L
 #include <stdlib.h>     /* Pour EXIT_FAILURE */
 
 #include "ncurses.h"

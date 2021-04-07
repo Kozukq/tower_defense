@@ -1,3 +1,4 @@
+#define _POSIX_C_SOURCE 200809L
 #include <stdlib.h> 	/* EXIT_SUCCESS, EXIT_FAILURE */
 #include <stdio.h> 		/* fprintf() */
 #include <dirent.h> 	/* opendir() */

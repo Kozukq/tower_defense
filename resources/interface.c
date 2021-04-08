@@ -436,7 +436,6 @@ void interface_carte(interface_t *interface, jeu_t *jeu, int posX, int posY) {
       jeu->carte[posY][posX].tour = tour1;
       arg.tour = &tour1;
       arg.jeu = jeu;
-      arg.interface = interface;
       status = pthread_create(&thread, NULL, thread_tour, &arg);
       if(status != 0){
 	fprintf(stderr,"\nErreur lors de la création d'un thread");

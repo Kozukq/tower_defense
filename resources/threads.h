@@ -8,7 +8,6 @@
 
 typedef struct thread_tour_arg_t{
   tour * tour;
-  interface_t * interface;
   jeu_t * jeu;
 } thread_tour_arg;
 void * thread_tour(void * arg);

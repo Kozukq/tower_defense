@@ -29,12 +29,13 @@ typedef struct case_t {
 #define COULEUR_ORDI      6
 
 /* Type d'unite*/
-#define UNITE_SOLDAT   0
-#define UNITE_COMMANDO 1
-#define UNITE_VEHICULE 2
-#define UNITE_MISSILE  3
-#define UNITE_CHAR     4
-#define UNITE_TOUR     5
-#define UNITE_FORT     6
+#define UNITE_AUCUNE   0
+#define UNITE_SOLDAT   1
+#define UNITE_COMMANDO 2
+#define UNITE_VEHICULE 3
+#define UNITE_MISSILE  4
+#define UNITE_CHAR     5
+#define UNITE_TOUR     6
+#define UNITE_FORT     7
 
 #endif

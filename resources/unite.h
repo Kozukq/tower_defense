@@ -2,9 +2,10 @@
 #define UNITE_H
 
 typedef struct unite_t{
+	int cout;
   int vie;
-  int deplacement;
-  int poxY;
+  int vitesse;
+  int posY;
   int posX;
 } unite;
 

@@ -13,9 +13,10 @@ typedef struct thread_tour_arg_t{
 
 typedef struct thread_unite_arg_t{
   unite * unite;
-	
+	interface_t * interface;
   jeu_t * jeu;
 } thread_unite_arg;
+
 void * thread_tour(void * arg);
 void * thread_unite(void * arg);
 

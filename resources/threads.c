@@ -3,6 +3,7 @@
 #include <time.h>
 #include "unistd.h"
 
+/*Routine de thread pour une tour*/
 void * thread_tour(void * arg){
 	/*Définition des attributs de la tour*/
 	thread_tour_arg * t = (thread_tour_arg * ) arg;
@@ -49,6 +50,49 @@ void * thread_tour(void * arg){
   pthread_exit(NULL);
 }
 
+/*Routine de thread pour une unite*/
 void * thread_unite(void * arg){
+	/*Définition des attributs de l'unite*/
+	thread_unite_arg * u = (thread_unite_arg * ) arg;
+	int departY, finY, departX, finX;
+	
+	/*Pour nanosleep*/
+	struct timespec req, rem;
+	req.tv_sec = u->unite->vitesse / 1000;
+  req.tv_nsec = u->unite->vitesse % 1000;
+	
+	/*Définition de la posibilité de déplacement de l'unité*/
+	departY = u->unite->posY - 1;
+	if(departY < 0){
+		departY = 0;
+	}
+	finY = u->unite->posY + 1;
+	if(finY > 14){
+		finY = 14;
+	}
+	departX = u->unite->posX - 1;
+	if(departX < 0){
+		departX = 0;
+	}
+	finX = u->unite->posX + 1;
+	if(finX > 14){
+		finX = 14;
+	}
+
+	/*Boucle principale*/
+  while(u->unite->vie > 0){
+    int i,j;
+  	nanosleep(&req, &rem);
+		for(i=departY; i <= finY; i = i+1){
+			for(j = departX; j <= finX ; j = j+1){
+    		pthread_mutex_lock(&u -> jeu -> carte[i][j].mutex);
+				if(u -> jeu -> carte[i][j].element >= CASE_MIN_CHEMIN && u -> jeu -> carte[i][j].type_unite == UNITE_AUCUNE ){
+					
+				}
+				pthread_mutex_unlock(&u -> jeu -> carte[i][j].mutex);
+			}
+		}
+  }
+  pthread_exit(NULL);
   pthread_exit(NULL);
 }

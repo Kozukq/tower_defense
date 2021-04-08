@@ -438,8 +438,8 @@ void interface_carte(interface_t *interface, jeu_t *jeu, int posX, int posY) {
       arg.jeu = jeu;
       status = pthread_create(&thread, NULL, thread_tour, &arg);
       if(status != 0){
-	fprintf(stderr,"\nErreur lors de la création d'un thread");
-	exit(-1);
+				fprintf(stderr,"\nErreur lors de la création d'un thread");
+				exit(-1);
       }
       interface_MAJOutils(interface, jeu);
       interface_MAJEtat(interface, jeu);

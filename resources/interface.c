@@ -451,11 +451,25 @@ void interface_carte(interface_t *interface, jeu_t *jeu, int posX, int posY) {
     break;
   case OUTIL_TOUR_2:
     if((jeu->carte[posY][posX].element == CASE_VIDE) && (jeu->argent >= TOUR_2_COUT)) {
+      int status;
+      tour tour2 = {TOUR_2_TIR_MIN, TOUR_2_TIR_MAX, TOUR_2_PORTEE, TOUR_2_VITESSE};
+      thread_tour_arg arg;
+      pthread_t thread;
+      tour2.posY = posY;
+      tour2.posX = posX;
       jeu->argent -= TOUR_2_COUT;
       jeu->carte[posY][posX].element = CASE_PRISE;
-      wprintw(interface->infos->interieur, "\nTour 2 posee... pour de faux !");
+      wprintw(interface->infos->interieur, "\nTour 2 posee.");
       jeu->carte[posY][posX].type_unite = UNITE_TOUR;
       mvwaddch(interface->carte->interieur, posY, posX, 'T');
+      jeu->carte[posY][posX].tour = tour2;
+      arg.tour = &tour2;
+      arg.jeu = jeu;
+      status = pthread_create(&thread, NULL, thread_tour, &arg);
+			if(status != 0){
+				fprintf(stderr,"\nErreur lors de la création d'un thread");
+				exit(-1);
+      }
       interface_MAJOutils(interface, jeu);
       interface_MAJEtat(interface, jeu);
       interface_MAJAttaques(interface, jeu);
@@ -466,11 +480,25 @@ void interface_carte(interface_t *interface, jeu_t *jeu, int posX, int posY) {
     break;
   case OUTIL_TOUR_3:
     if((jeu->carte[posY][posX].element == CASE_VIDE) && (jeu->argent >= TOUR_3_COUT)) {
+      int status;
+      tour tour3 = {TOUR_3_TIR_MIN, TOUR_3_TIR_MAX, TOUR_3_PORTEE, TOUR_3_VITESSE};
+      thread_tour_arg arg;
+      pthread_t thread;
+      tour3.posY = posY;
+      tour3.posX = posX;
       jeu->argent -= TOUR_3_COUT;
       jeu->carte[posY][posX].element = CASE_PRISE;
-      wprintw(interface->infos->interieur, "\nTour 3 posee... pour de faux !");
+      wprintw(interface->infos->interieur, "\nTour 3 posee.");
       jeu->carte[posY][posX].type_unite = UNITE_TOUR;
       mvwaddch(interface->carte->interieur, posY, posX, 'T');
+      jeu->carte[posY][posX].tour = tour3;
+      arg.tour = &tour3;
+      arg.jeu = jeu;
+      status = pthread_create(&thread, NULL, thread_tour, &arg);
+			if(status != 0){
+				fprintf(stderr,"\nErreur lors de la création d'un thread");
+				exit(-1);
+      }
       interface_MAJOutils(interface, jeu);
       interface_MAJEtat(interface, jeu);
       interface_MAJAttaques(interface, jeu);
@@ -481,11 +509,25 @@ void interface_carte(interface_t *interface, jeu_t *jeu, int posX, int posY) {
     break;
   case OUTIL_TOUR_4:
     if((jeu->carte[posY][posX].element == CASE_VIDE) && (jeu->argent >= TOUR_4_COUT)) {
+       int status;
+      tour tour4 = {TOUR_4_TIR_MIN, TOUR_4_TIR_MAX, TOUR_4_PORTEE, TOUR_4_VITESSE};
+      thread_tour_arg arg;
+      pthread_t thread;
+      tour4.posY = posY;
+      tour4.posX = posX;
       jeu->argent -= TOUR_4_COUT;
       jeu->carte[posY][posX].element = CASE_PRISE;
-      wprintw(interface->infos->interieur, "\nTour 4 posee... pour de faux !");
+      wprintw(interface->infos->interieur, "\nTour 4 posee.");
       jeu->carte[posY][posX].type_unite = UNITE_TOUR;
       mvwaddch(interface->carte->interieur, posY, posX, 'T');
+      jeu->carte[posY][posX].tour = tour4;
+      arg.tour = &tour4;
+      arg.jeu = jeu;
+      status = pthread_create(&thread, NULL, thread_tour, &arg);
+			if(status != 0){
+				fprintf(stderr,"\nErreur lors de la création d'un thread");
+				exit(-1);
+      }
       interface_MAJOutils(interface, jeu);
       interface_MAJEtat(interface, jeu);
       interface_MAJAttaques(interface, jeu);
@@ -496,11 +538,25 @@ void interface_carte(interface_t *interface, jeu_t *jeu, int posX, int posY) {
     break;
   case OUTIL_TOUR_5:
     if((jeu->carte[posY][posX].element == CASE_VIDE) && (jeu->argent >= TOUR_5_COUT)) {
+      int status;
+      tour tour5 = {TOUR_5_TIR_MIN, TOUR_5_TIR_MAX, TOUR_5_PORTEE, TOUR_5_VITESSE};
+      thread_tour_arg arg;
+      pthread_t thread;
+      tour5.posY = posY;
+      tour5.posX = posX;
       jeu->argent -= TOUR_5_COUT;
       jeu->carte[posY][posX].element = CASE_PRISE;
-      wprintw(interface->infos->interieur, "\nTour 5 posee... pour de faux !");
+      wprintw(interface->infos->interieur, "\nTour 5 posee.");
       jeu->carte[posY][posX].type_unite = UNITE_TOUR;
       mvwaddch(interface->carte->interieur, posY, posX, 'T');
+      jeu->carte[posY][posX].tour = tour5;
+      arg.tour = &tour5;
+      arg.jeu = jeu;
+      status = pthread_create(&thread, NULL, thread_tour, &arg);
+			if(status != 0){
+				fprintf(stderr,"\nErreur lors de la création d'un thread");
+				exit(-1);
+      }
       interface_MAJOutils(interface, jeu);
       interface_MAJEtat(interface, jeu);
       interface_MAJAttaques(interface, jeu);

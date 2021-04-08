@@ -38,7 +38,7 @@ void * thread_tour(void * arg){
 		for(i=departY; i <= finY; i = i+1){
 			for(j = departX; j <= finX ; j = j+1){
     		pthread_mutex_lock(&t -> jeu -> carte[i][j].mutex);
-				if(t -> jeu -> carte[i][j].type_unite != UNITE_AUCUNE){
+				if(t -> jeu -> carte[i][j].element != CASE_FORT && t -> jeu -> carte[i][j].type_unite != UNITE_AUCUNE && t -> jeu -> carte[i][j].type_unite != UNITE_TOUR ){
 					tir = (rand() % ( t-> tour -> tir_max - t-> tour ->tir_min)) + t-> tour -> tir_min;
 					t -> jeu -> carte[i][j].unite.vie = t -> jeu -> carte[i][j].unite.vie - tir;
 				}

@@ -132,6 +132,9 @@ void interface_carte(struct interface* interface, struct game* game, int posX, i
  */
 void interface_main(struct interface* interface, struct game* game, int input_key);
 
+/**
+ * Routine d'initialisation du thread de l'interface
+ */
 void* interface_behaviour(void* arg);
 
 #endif

@@ -102,12 +102,14 @@
 #define MIN                 0
 #define MAX                 1
 
+/*Structure représentant une unité*/
 struct soldier {
 	int position[2];
 	int speed;
 	int health;
 };
 
+/*Structure représentant une tour*/
 struct tower {
 	int damage[2];
 	int position[2];
@@ -115,6 +117,7 @@ struct tower {
 	int range;
 };
 
+/*Structure représentant une case*/
 struct square {
 	pthread_mutex_t mutex;
 	int background;
@@ -123,6 +126,7 @@ struct square {
 	struct tower tower;
 };
 
+/*Structure représentant les données du jeu*/
 struct game {
 	pthread_mutex_t mutex;
 	struct square board[15][15];
@@ -133,19 +137,34 @@ struct game {
 	int unfreeze;
 };
 
+/*Structure à passer en argument à la routine de thread de la tour*/
 struct tower_state {
 	struct game* game;
 	struct tower* tower;
 };
 
+/*Structure à passer en argument à la routine de thread des unités*/
 struct soldier_state {
 	struct game* game;
 	struct interface* interface;
 	struct soldier* soldier;
 };
 
+/**
+ * Sert à initialiser une structure de jeu
+ * @param game un pointeur sur la structure de jeu à initialiser
+ * @param map un pointeur sur la structure de carte servant à l'initialisation du jeu
+ */
 void initialize_game(struct game* game, struct map* map);
+/**
+ * Routine de thread de la tour
+ * @param arg un pointeur sur une structure tower_state
+ */
 void* tower_behaviour(void* arg);
+/**
+ * Routine de thread des unités
+ * @param arg un pointeur sur une structure soldier_state
+ */
 void* soldier_behaviour(void* arg);
 
 #endif

@@ -9,3 +9,7 @@ Il est important de lancer le serveur en premier, soit l'exécutable ./server . 
 
 Ensuite, on peut commencer à lancer les clients, soit l'executable ./client . Il faut préciser l'adresse du serveur et son port, par exemple, si la commande précédente a été lancée sur la même machine :
 	./client localhost 1400
+
+Exemple pour créer une partie :
+Lorsque le client doit choisir de créer ou rejoindre une partie, entrer 1.
+Ensuite, le client devra choisir sa carte et son scénario. Pour choisir la première carte et le premier scénario, entrer 11.

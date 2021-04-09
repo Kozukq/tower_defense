@@ -119,48 +119,57 @@ void* soldier_behaviour(void* arg) {
   	req.tv_nsec = soldier_state->soldier->speed % 1000;
 	
 	/*Définition de la posibilité de déplacement de l'unité*/
-	minY = soldier_state->soldier->position[0] - 1;
+
+	minY = soldier_state->soldier->position[Y] - 1;
 	if(minY < 0){
 		minY = 0;
 	}
-	maxY = soldier_state->soldier->position[0] + 1;
+
+	maxY = soldier_state->soldier->position[Y] + 1;
 	if(maxY > 14){
 		maxY = 14;
 	}
-	minX = soldier_state->soldier->position[1] - 1;
+
+	minX = soldier_state->soldier->position[X] - 1;
 	if(minX < 0){
 		minX = 0;
 	}
-	maxX = soldier_state->soldier->position[1] + 1;
+
+	maxX = soldier_state->soldier->position[X] + 1;
 	if(maxX > 14){
 		maxX = 14;
 	}
 
 	/*Boucle principale*/
-  while(soldier_state->soldier->health > 0){
-    int i,j, has_moved = 0;
-  	nanosleep(&req, &rem);
+  	while(soldier_state->soldier->health > 0){
+    	int i,j, has_moved = 0;
+  		nanosleep(&req, &rem);
 		for(i=minY; i <= maxY && has_moved == 0; i = i+1){
 			for(j = minX; j <= maxX && has_moved == 0; j = j+1){
-    		pthread_mutex_lock(&soldier_state->game->board[i][j].mutex);
+   				pthread_mutex_lock(&soldier_state->game->board[i][j].mutex);
 				if(soldier_state -> game -> board[i][j].background >= CASE_MIN_CHEMIN && soldier_state -> game -> board[i][j].background <= CASE_MIN_CHEMIN && soldier_state -> game -> board[i][j].unit_type == UNITE_AUCUNE ){
-					if(soldier_state -> game -> board[i][j].background >= soldier_state -> game ->board[soldier_state->soldier->position[0]][soldier_state->soldier->position[1]].background){
-						pthread_mutex_lock(&soldier_state -> game ->board[soldier_state->soldier->position[0]][soldier_state->soldier->position[1]].mutex);
-						/*mvwaddch(soldier_state -> interface->map->interieur, i, j, 'U');*/
-						mvwaddch(soldier_state -> interface->map->interieur, soldier_state->soldier->position[0], soldier_state->soldier->position[1], ' ');
-						soldier_state -> game ->board[i][j].unit_type = soldier_state -> game ->board[soldier_state->soldier->position[0]][soldier_state->soldier->position[1]].unit_type;
-						soldier_state -> game ->board[soldier_state->soldier->position[0]][soldier_state->soldier->position[1]].unit_type = UNITE_AUCUNE;
-						soldier_state -> game ->board[i][j].soldier = soldier_state -> game ->board[soldier_state->soldier->position[0]][soldier_state->soldier->position[1]].soldier;
-						pthread_mutex_unlock(&soldier_state -> game ->board[soldier_state->soldier->position[0]][soldier_state->soldier->position[1]].mutex);
-						soldier_state->soldier->position[0] = i;
-						soldier_state->soldier->position[1] = j;
+					if(soldier_state -> game -> board[i][j].background >= soldier_state -> game ->board[soldier_state->soldier->position[Y]][soldier_state->soldier->position[X]].background){
+						pthread_mutex_lock(&soldier_state -> game ->board[soldier_state->soldier->position[Y]][soldier_state->soldier->position[X]].mutex);
+						mvwaddch(soldier_state -> interface->map->interieur, i, j, 'U');
+						mvwaddch(soldier_state -> interface->map->interieur, soldier_state->soldier->position[Y], soldier_state->soldier->position[X], ' ');
+						soldier_state -> game ->board[i][j].unit_type = soldier_state -> game ->board[soldier_state->soldier->position[Y]][soldier_state->soldier->position[X]].unit_type;
+						soldier_state -> game ->board[soldier_state->soldier->position[Y]][soldier_state->soldier->position[X]].unit_type = UNITE_AUCUNE;
+						soldier_state -> game ->board[i][j].soldier = soldier_state -> game ->board[soldier_state->soldier->position[Y]][soldier_state->soldier->position[X]].soldier;
+						pthread_mutex_unlock(&soldier_state -> game ->board[soldier_state->soldier->position[Y]][soldier_state->soldier->position[X]].mutex);
+						soldier_state->soldier->position[Y] = i;
+						soldier_state->soldier->position[X] = j;
 						has_moved = 1;
-					}
-					
+						if(soldier_state -> game ->board[i][j].background == CASE_FORT){
+							soldier_state->game->health--;
+                    		interface_MAJEtat(soldier_state->interface, soldier_state->game);
+							
+						}
+						pthread_mutex_unlock(&soldier_state -> game ->board[soldier_state->soldier->position[Y]][soldier_state->soldier->position[X]].mutex);
+					}				
 				}
 				pthread_mutex_unlock(&soldier_state->game->board[i][j].mutex);
 			}
 		}
-  }
+  	}
   pthread_exit(NULL);
 }

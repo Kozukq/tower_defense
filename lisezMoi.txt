@@ -1,0 +1,11 @@
+Compilation : 
+L'application se compile avec un simple make.
+
+Execution : 
+Au moins 5 onglets/terminaux sont nécessaires afin d'utiliser l'application. 
+
+Il est important de lancer le serveur en premier, soit l'exécutable ./server . Il faut spécifier le port auquel il va se connecter, par exemple :
+	./server 1400
+
+Ensuite, on peut commencer à lancer les clients, soit l'executable ./client . Il faut préciser l'adresse du serveur et son port, par exemple, si la commande précédente a été lancée sur la même machine :
+	./client localhost 1400

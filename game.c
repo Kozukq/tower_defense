@@ -80,7 +80,7 @@ void* tower_behaviour(void* arg) {
 		int i;
 		int j;
 		int damage;
-
+		/*Cancellation point*/
 		nanosleep(&time,NULL);
 
 		for(i = min_y; i <= max_y; i++) {

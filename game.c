@@ -80,7 +80,6 @@ void* tower_behaviour(void* arg) {
 		int i;
 		int j;
 		int damage;
-		/*Cancellation point*/
 		nanosleep(&time,NULL);
 
 		for(i = min_y; i <= max_y; i++) {
@@ -142,31 +141,52 @@ void* soldier_behaviour(void* arg) {
 
 	/*Boucle principale*/
   	while(soldier_state->soldier->health > 0){
-    	int i,j, has_moved = 0;
+		
+    	int i;
+		int j;
+		int has_moved = 0;
   		nanosleep(&req, &rem);
-		for(i=minY; i <= maxY && has_moved == 0; i = i+1){
-			for(j = minX; j <= maxX && has_moved == 0; j = j+1){
+
+		for(i=minY; i <= maxY && has_moved == 0; i++){
+
+			for(j = minX; j <= maxX && has_moved == 0; j++){
+
    				pthread_mutex_lock(&soldier_state->game->board[i][j].mutex);
-				if(soldier_state -> game -> board[i][j].background >= CASE_MIN_CHEMIN && soldier_state -> game -> board[i][j].background <= CASE_MIN_CHEMIN && soldier_state -> game -> board[i][j].unit_type == UNITE_AUCUNE ){
+
+				if(soldier_state -> game -> board[i][j].background >= CASE_MIN_CHEMIN 
+				&& soldier_state -> game -> board[i][j].background <= CASE_MIN_CHEMIN 
+				&& soldier_state -> game -> board[i][j].unit_type == UNITE_AUCUNE ){
+
 					if(soldier_state -> game -> board[i][j].background >= soldier_state -> game ->board[soldier_state->soldier->position[Y]][soldier_state->soldier->position[X]].background){
+
 						pthread_mutex_lock(&soldier_state -> game ->board[soldier_state->soldier->position[Y]][soldier_state->soldier->position[X]].mutex);
+
+						/*Mise à jour du plateau sur l'interface*/
 						mvwaddch(soldier_state -> interface->map->interieur, i, j, 'U');
 						mvwaddch(soldier_state -> interface->map->interieur, soldier_state->soldier->position[Y], soldier_state->soldier->position[X], ' ');
+
+						/*Mise à jour des corrdonnées du soldat sur la plateau*/
 						soldier_state -> game ->board[i][j].unit_type = soldier_state -> game ->board[soldier_state->soldier->position[Y]][soldier_state->soldier->position[X]].unit_type;
 						soldier_state -> game ->board[soldier_state->soldier->position[Y]][soldier_state->soldier->position[X]].unit_type = UNITE_AUCUNE;
 						soldier_state -> game ->board[i][j].soldier = soldier_state -> game ->board[soldier_state->soldier->position[Y]][soldier_state->soldier->position[X]].soldier;
-						pthread_mutex_unlock(&soldier_state -> game ->board[soldier_state->soldier->position[Y]][soldier_state->soldier->position[X]].mutex);
+
 						soldier_state->soldier->position[Y] = i;
 						soldier_state->soldier->position[X] = j;
+
 						has_moved = 1;
+
 						if(soldier_state -> game ->board[i][j].background == CASE_FORT){
+
 							soldier_state->game->health--;
                     		interface_MAJEtat(soldier_state->interface, soldier_state->game);
 							
 						}
+
 						pthread_mutex_unlock(&soldier_state -> game ->board[soldier_state->soldier->position[Y]][soldier_state->soldier->position[X]].mutex);
+
 					}				
 				}
+
 				pthread_mutex_unlock(&soldier_state->game->board[i][j].mutex);
 			}
 		}

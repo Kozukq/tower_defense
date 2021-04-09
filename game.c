@@ -1,7 +1,9 @@
 #include "game.h"
+#include "interface.h"
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <ncurses.h>
 
 void initialize_game(struct game* game, struct map* map) {
 
@@ -143,13 +145,15 @@ void* soldier_behaviour(void* arg) {
     		pthread_mutex_lock(&soldier_state->game->board[i][j].mutex);
 				if(soldier_state -> game -> board[i][j].background >= CASE_MIN_CHEMIN && soldier_state -> game -> board[i][j].background <= CASE_MIN_CHEMIN && soldier_state -> game -> board[i][j].unit_type == UNITE_AUCUNE ){
 					if(soldier_state -> game -> board[i][j].background >= soldier_state -> game ->board[soldier_state->soldier->position[0]][soldier_state->soldier->position[1]].background){
-						/*pthread_mutex_lock(&soldier_state -> game ->board[soldier_state->soldier->position[0]][soldier_state->soldier->position[1]].mutex);
-						mvwaddch(soldier_state -> interface->map->interieur, i, j, 'U');
-						mvwaddch(soldier_state -> interface->map->interieur, u->unite->posY, u->unite->posX, ' ');
-						u -> jeu -> carte[i][j].type_unite =  u -> jeu ->carte[u->unite->posY][u->unite->posX].type_unite;
-						u -> jeu ->carte[u->unite->posY][u->unite->posX].type_unite = UNITE_AUCUNE;
-						u -> jeu ->carte[i][j].unite = u -> jeu ->carte[u->unite->posY][u->unite->posX].unite;
-						pthread_mutex_lock(&u -> jeu ->carte[u->unite->posY][u->unite->posX].mutex);*/
+						pthread_mutex_lock(&soldier_state -> game ->board[soldier_state->soldier->position[0]][soldier_state->soldier->position[1]].mutex);
+						/*mvwaddch(soldier_state -> interface->map->interieur, i, j, 'U');*/
+						mvwaddch(soldier_state -> interface->map->interieur, soldier_state->soldier->position[0], soldier_state->soldier->position[1], ' ');
+						soldier_state -> game ->board[i][j].unit_type = soldier_state -> game ->board[soldier_state->soldier->position[0]][soldier_state->soldier->position[1]].unit_type;
+						soldier_state -> game ->board[soldier_state->soldier->position[0]][soldier_state->soldier->position[1]].unit_type = UNITE_AUCUNE;
+						soldier_state -> game ->board[i][j].soldier = soldier_state -> game ->board[soldier_state->soldier->position[0]][soldier_state->soldier->position[1]].soldier;
+						pthread_mutex_unlock(&soldier_state -> game ->board[soldier_state->soldier->position[0]][soldier_state->soldier->position[1]].mutex);
+						soldier_state->soldier->position[0] = i;
+						soldier_state->soldier->position[1] = j;
 						has_moved = 1;
 					}
 					

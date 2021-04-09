@@ -103,9 +103,10 @@ archive: clean
 
 # DEPENDANCES
 config.o: config.c config.h
-fenetre.o: fenetre.c fenetre.h
-game.o: game.c game.h
-interface.o: interface.c interface.h fenetre.h game.h ncurses.h
+fenetre.o: fenetre.c fenetre.h ncurses.h
+game.o: game.c game.h config.h interface.h fenetre.h ncurses.h
+interface.o: interface.c interface.h fenetre.h ncurses.h game.h config.h
 ncurses.o: ncurses.c ncurses.h
 server.o: server.c network.h config.h game.h
-client.o: client.c network.h config.h interface.h fenetre.h game.h
+client.o: client.c network.h config.h interface.h fenetre.h ncurses.h \
+  game.h

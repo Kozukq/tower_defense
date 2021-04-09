@@ -66,7 +66,11 @@ int main(int argc, char* argv[]) {
 	fprintf(stdout,"|    Join (2)    |\n");
 	fprintf(stdout,"└----------------┘\n");
 	fprintf(stdout,">");
-	fscanf(stdin,"%d",&msg);
+	status = fscanf(stdin,"%d",&msg);
+	if(status < 1) {
+		fprintf(stderr,"%s (input scan)\n",strerror(errno));
+		exit(EXIT_FAILURE);	
+	}
 	if(!((msg == 1) || (msg == 2))) {
 		fprintf(stderr,"Wrong input\n");
 		exit(EXIT_FAILURE);
@@ -109,7 +113,11 @@ int main(int argc, char* argv[]) {
 		/* choix de la configuration */
 		fprintf(stdout,"%s\n",config_list);
 		fprintf(stdout,">");
-		fscanf(stdin,"%d",&msg);
+		status = fscanf(stdin,"%d",&msg);
+		if(status < 1) {
+			fprintf(stderr,"%s (input scan)\n",strerror(errno));
+			exit(EXIT_FAILURE);	
+		}
 		
 		/* envoi serveur : choix de configuration */
 		if(DEBUG) fprintf(stdout,"sending..\n");
@@ -138,7 +146,11 @@ int main(int argc, char* argv[]) {
 
 		/* choix de la partie */
 		fprintf(stdout,">");
-		fscanf(stdin,"%d",&msg);
+		status = fscanf(stdin,"%d",&msg);
+		if(status < 1) {
+			fprintf(stderr,"%s (input scan)\n",strerror(errno));
+			exit(EXIT_FAILURE);	
+		}
 	
 		/* envoi serveur : choix de partie */
 		if(DEBUG) fprintf(stdout,"sending..\n");

@@ -100,7 +100,7 @@ int main(int argc, char* argv[]) {
 				if(DEBUG) fprintf(stdout,"sending..\n");
 				status = sendto(sockfd,&msg,sizeof(msg),0,(struct sockaddr*)&client,client_addrlen);
 				if(status == -1) {
-					fprintf(stderr,"%s (sending to the client)\n",strerror(errno));
+					fprintf(stderr,"%d:%s (sending to the client)\n",errno,strerror(errno));
 					exit(EXIT_FAILURE);		
 				}
 
@@ -125,7 +125,7 @@ int main(int argc, char* argv[]) {
 
 				/* réception client : choix de configuration */
 				if(DEBUG) fprintf(stdout,"..waiting\n");
-				status = recvfrom(sockfd,&msg,sizeof(&msg),0,NULL,NULL);
+				status = recvfrom(sockfd,&msg,sizeof(msg),0,NULL,NULL);
 				if(status == -1) {
 					fprintf(stderr,"%s (receiving from the client)\n",strerror(errno));
 					exit(EXIT_FAILURE);		
@@ -208,7 +208,7 @@ int main(int argc, char* argv[]) {
 
 			/* réception client : port TCP concerné par la fermeture */
 			if(DEBUG) fprintf(stdout,"..waiting\n");
-			status = recvfrom(sockfd,&msg,sizeof(&msg),0,NULL,NULL);
+			status = recvfrom(sockfd,&msg,sizeof(msg),0,NULL,NULL);
 			if(status == -1) {
 				fprintf(stderr,"%s (receiving from the client)\n",strerror(errno));
 				exit(EXIT_FAILURE);		

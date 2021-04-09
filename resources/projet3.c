@@ -60,8 +60,10 @@ void * creation_interface(void * arg){
   }
   
   /* Suppression de l'interface */
+	pthread_mutex_lock(&interface.mutex);
   interface_supprimer(&interface.interface);
-  
+	pthread_mutex_unlock(&interface.mutex);  
+
   /* Arrêt de ncurses */
   ncurses_stopper();
   return (void*) NULL;

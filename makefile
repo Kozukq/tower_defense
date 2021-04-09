@@ -10,7 +10,7 @@
 #
 
 EXEC = server client
-OBJETS = config.o
+OBJETS = config.o fenetre.o game.o interface.o ncurses.o
 NOM_PROJET = tower_defense
 
 #
@@ -35,7 +35,7 @@ CCFLAGS_STD = -Wall -O3 -Werror -ansi -pedantic
 CCFLAGS_MACOS = -I/usr/local/opt/ncurses/include
 CCFLAGS_DEBUG = -D _DEBUG_
 CCFLAGS = $(CCFLAGS_STD)
-CCLIBS = -lncurses 
+CCLIBS = -lncurses -lpthread
 CCLIBS_MACOS = -L/usr/local/opt/ncurses/lib
 
 #
@@ -103,5 +103,9 @@ archive: clean
 
 # DEPENDANCES
 config.o: config.c config.h
-server.o: server.c network.h config.h
-client.o: client.c network.h config.h
+fenetre.o: fenetre.c fenetre.h
+game.o: game.c game.h
+interface.o: interface.c interface.h fenetre.h game.h ncurses.h
+ncurses.o: ncurses.c ncurses.h
+server.o: server.c network.h config.h game.h
+client.o: client.c network.h config.h interface.h fenetre.h game.h

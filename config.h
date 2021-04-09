@@ -2,7 +2,7 @@
 #define CONFIG_H
 
 #define _POSIX_C_SOURCE 200809L
-#define DEBUG 0
+#define DEBUG 1
 
 #include <stdint.h> /* nécessaire pour gérer les types à taille fixe sur Linux apparemment */
 

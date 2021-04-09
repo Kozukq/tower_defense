@@ -1,4 +1,5 @@
 #include "network.h"
+#include "game.h"
 
 #include <stdlib.h> 	/* EXIT_SUCCESS, EXIT_FAILURE */
 #include <stdio.h> 		/* fprintf() */
@@ -7,7 +8,6 @@
 #include <errno.h> 		/* errno */
 #include <arpa/inet.h> 	/* htons(), htonl() */
 #include <unistd.h> 	/* close() */
-#include <pthread.h>	/* pthread_create(), pthread_join() */
 
 int main(int argc, char* argv[]) {
 	
@@ -22,11 +22,11 @@ int main(int argc, char* argv[]) {
 	struct sockaddr_in server;
 	struct sockaddr_in client;
 	struct config config;
-	struct game* game;
+	struct game_config* game_config;
 
 	/* initialisations */
 	memset(games,0,sizeof(games));
-	game = NULL;
+	game_config = NULL;
 
 	/* vérification des arguments */
 	if(argc != 2) {
@@ -132,13 +132,13 @@ int main(int argc, char* argv[]) {
 				}
 
 				/* génération de la partie */
-				game = (struct game*)malloc(sizeof(struct game));
-				game->map = config.maps[msg / 10];
-				game->scenario = config.scenarios[msg % 10];
-				game->tcp_port = new_game(games);
+				game_config = (struct game_config*)malloc(sizeof(struct game_config));
+				game_config->map = config.maps[msg / 10];
+				game_config->scenario = config.scenarios[msg % 10];
+				game_config->tcp_port = new_game(games);
 
 				/* envoi client : port TCP */
-				msg = game->tcp_port;
+				msg = game_config->tcp_port;
 				if(DEBUG) fprintf(stdout,"sending..\n");
 				status = sendto(sockfd,&msg,sizeof(msg),0,(struct sockaddr*)&client,client_addrlen);
 				if(status == -1) {
@@ -146,14 +146,14 @@ int main(int argc, char* argv[]) {
 					exit(EXIT_FAILURE);	
 				}
 
-				/* lancement de la partie */
-				status = pthread_create(&gamethreads[game->tcp_port - 3001],NULL,tcp_server,game);
+				/* création du thread gérant le serveur TCP */
+				status = pthread_create(&gamethreads[game_config->tcp_port - 3001],NULL,tcp_server,game_config);
 				if(status != 0) {
-					fprintf(stderr,"%d (creating game thread)\n",status);
+					fprintf(stderr,"error:%d (creating game thread)\n",status);
 					exit(EXIT_FAILURE);		
 				}
 
-				fprintf(stdout,"Game %d has launched\n",game->tcp_port - 3001);
+				fprintf(stdout,"Game %d has launched\n",game_config->tcp_port - 3001);
 			}
 			else if(msg == JOIN_GAME) {
 
@@ -216,9 +216,9 @@ int main(int argc, char* argv[]) {
 
 			/* traitement de la terminaison du thread */
 			msg = msg - 3001;
-			status = pthread_join(gamethreads[msg],(void*)game);
+			status = pthread_join(gamethreads[msg],(void*)game_config);
 			if(status != 0) {
-				fprintf(stderr,"%d (creating game thread)\n",status);
+				fprintf(stderr,"error:%d (creating game thread)\n",status);
 				exit(EXIT_FAILURE);		
 			}
 
@@ -226,7 +226,7 @@ int main(int argc, char* argv[]) {
 			games[msg] = FREE;
 
 			/* libération de la mémoire */
-			free(game);
+			free(game_config);
 
 			fprintf(stdout,"Server %d has been closed\n",msg);
 		}
@@ -252,10 +252,10 @@ void* tcp_server(void* arg) {
 	socklen_t client_addrlen;
 	struct sockaddr_in tcpserver;
 	struct sockaddr_in client;
-	struct game* game;
+	struct game_config* game_config;
 
 	/* récupération de la configuration de la partie */
-	game = (struct game*)arg;
+	game_config = (struct game_config*)arg;
 
 	/* ouverture de la socket */
 	sockfd = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
@@ -267,7 +267,7 @@ void* tcp_server(void* arg) {
 	/* création de l'adresse du serveur */
 	memset(&tcpserver,0,sizeof(struct sockaddr_in));
 	tcpserver.sin_family = AF_INET;
-	tcpserver.sin_port = htons(game->tcp_port);
+	tcpserver.sin_port = htons(game_config->tcp_port);
 	tcpserver.sin_addr.s_addr = htonl(INADDR_ANY);
 
 	/* nommage de la socket */
@@ -295,14 +295,14 @@ void* tcp_server(void* arg) {
 		}
 
 		/* envoi client : carte de jeu */
-		status = write(fd,&game->map,sizeof(struct map));
+		status = write(fd,&game_config->map,sizeof(struct map));
 		if(status == -1) {
 			fprintf(stderr,"%s (sending to the client)\n",strerror(errno));
 			exit(EXIT_FAILURE);
 		}
 
 		/* envoi client : scénario de jeu */
-		status = write(fd,&game->scenario,sizeof(struct scenario));
+		status = write(fd,&game_config->scenario,sizeof(struct scenario));
 		if(status == -1) {
 			fprintf(stderr,"%s (sending to the client)\n",strerror(errno));
 			exit(EXIT_FAILURE);
@@ -324,7 +324,7 @@ void* tcp_server(void* arg) {
 		exit(EXIT_FAILURE);
 	}
 
-	return game;
+	return game_config;
 }
 
 int check_limit(int* games) {

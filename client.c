@@ -1,4 +1,5 @@
 #include "network.h"
+#include "interface.h"
 
 #include <stdlib.h> 	/* EXIT_SUCCESS, EXIT_FAILURE */
 #include <stdio.h> 		/* fprintf() */
@@ -8,6 +9,10 @@
 #include <arpa/inet.h> 	/* htons(), inet_pton() */
 #include <unistd.h> 	/* close() */
 
+/* déclarations globales */
+struct interface interface;
+struct game game;
+
 int main(int argc, char* argv[]) {
 
 	int udp_sockfd;
@@ -15,6 +20,7 @@ int main(int argc, char* argv[]) {
 	int status;
 	int msg;
 	int response;
+	pthread_t interface_thread;
 	int games[MAX_GAMES];
 	char config_list[256];
 	struct sockaddr_in server;
@@ -50,8 +56,8 @@ int main(int argc, char* argv[]) {
 	msg = BEGIN_CONNECTION;
 	status = sendto(udp_sockfd,&msg,sizeof(msg),0,(struct sockaddr*)&server,sizeof(struct sockaddr_in));
 	if(status == -1) {
-			fprintf(stderr,"%s (sending to the server)\n",strerror(errno));
-			exit(EXIT_FAILURE);		
+		fprintf(stderr,"%s (sending to the server)\n",strerror(errno));
+		exit(EXIT_FAILURE);		
 	}	
 
 	/* menu principal */
@@ -72,8 +78,8 @@ int main(int argc, char* argv[]) {
 	if(DEBUG) fprintf(stdout,"sending..\n");
 	status = sendto(udp_sockfd,&msg,sizeof(msg),0,(struct sockaddr*)&server,sizeof(struct sockaddr_in));
 	if(status == -1) {
-			fprintf(stderr,"%s (sending to the server)\n",strerror(errno));
-			exit(EXIT_FAILURE);		
+		fprintf(stderr,"%s (sending to the server)\n",strerror(errno));
+		exit(EXIT_FAILURE);		
 	}
 
 	/* réception serveur : acknowledgment */
@@ -109,8 +115,8 @@ int main(int argc, char* argv[]) {
 		if(DEBUG) fprintf(stdout,"sending..\n");
 		status = sendto(udp_sockfd,&msg,sizeof(msg),0,(struct sockaddr*)&server,sizeof(struct sockaddr_in));
 		if(status == -1) {
-				fprintf(stderr,"%s (sending to the server)\n",strerror(errno));
-				exit(EXIT_FAILURE);		
+			fprintf(stderr,"%s (sending to the server)\n",strerror(errno));
+			exit(EXIT_FAILURE);		
 		}		
 	}
 	else if(msg == JOIN_GAME) {
@@ -138,8 +144,8 @@ int main(int argc, char* argv[]) {
 		if(DEBUG) fprintf(stdout,"sending..\n");
 		status = sendto(udp_sockfd,&msg,sizeof(msg),0,(struct sockaddr*)&server,sizeof(struct sockaddr_in));
 		if(status == -1) {
-				fprintf(stderr,"%s (sending to the server)\n",strerror(errno));
-				exit(EXIT_FAILURE);		
+			fprintf(stderr,"%s (sending to the server)\n",strerror(errno));
+			exit(EXIT_FAILURE);		
 		}	
 	}
 	
@@ -194,9 +200,59 @@ int main(int argc, char* argv[]) {
 	fprintf(stdout,"map : %s\n",map.description);
 	fprintf(stdout,"scenario : %s\n",scenario.description);
 
+	/* initialisation du mutex positionné sur l'interface */
+	status = pthread_mutex_init(&interface.mutex,NULL);
+	if(status != 0) {
+		fprintf(stderr,"error:%d (mutex initialization)\n",status);
+		exit(EXIT_FAILURE);
+	}
+
+	/* initialisation du mutex positionné sur la partie */
+	status = pthread_mutex_init(&game.mutex,NULL);
+	if(status != 0) {
+		fprintf(stderr,"error:%d (mutex initialization)\n",status);
+		exit(EXIT_FAILURE);
+	}
+
+	/* initialisation de la partie */
+	pthread_mutex_lock(&game.mutex);
+	initialize_game(&game,&map);
+	pthread_mutex_unlock(&game.mutex);
+
+	/* création du thread gérant l'interface */
+	status = pthread_create(&interface_thread,NULL,interface_behaviour,NULL);
+	if(status != 0) {
+		fprintf(stderr,"error:%d (creating interface thread)\n",status);
+		exit(EXIT_FAILURE);		
+	}
+
 	/* boucle principale */
 	while(1) {
+
+		/* scénario de jeu */
+
 		break;
+	}
+
+	/* destruction du thread gérant l'interface */
+	status = pthread_join(interface_thread,NULL);
+	if(status != 0) {
+		fprintf(stderr,"error:%d (destroying interface thread)\n",status);
+		exit(EXIT_FAILURE);		
+	}
+
+	/* destruction du mutex positionné sur l'interface */
+	status = pthread_mutex_destroy(&interface.mutex);
+	if(status != 0) {
+		fprintf(stderr,"error:%d (mutex destruction)\n",status);
+		exit(EXIT_FAILURE);
+	}
+
+	/* destruction du mutex positionné sur la partie */
+	status = pthread_mutex_destroy(&game.mutex);
+	if(status != 0) {
+		fprintf(stderr,"error:%d (mutex destruction)\n",status);
+		exit(EXIT_FAILURE);
 	}
 
 	/* fermeture de la socket TCP */
@@ -214,6 +270,69 @@ int main(int argc, char* argv[]) {
 	}
 
 	return EXIT_SUCCESS;
+}
+
+void* interface_behaviour(void* arg) {
+
+	int exit_request;
+	int input_key;
+
+	/* initialisation de ncurses */
+	ncurses_initialiser();
+	ncurses_souris();
+	ncurses_couleurs(); 
+	palette();
+	clear();
+	refresh();
+	exit_request = FALSE;
+
+	/* vérification des dimensions du terminal */
+	if((COLS < LARGEUR) || (LINES < HAUTEUR)) {
+		
+		ncurses_stopper();
+		
+		fprintf(stderr,
+		"Les dimensions du terminal sont insufisantes : l=%d,h=%d au lieu de l=%d,h=%d\n", 
+	    COLS, LINES, LARGEUR, HAUTEUR);
+    
+    	exit(EXIT_FAILURE);
+	}
+
+	/* création de l'interface */
+	pthread_mutex_lock(&interface.mutex);
+	pthread_mutex_lock(&game.mutex);
+	interface = interface_creer(&game);
+	pthread_mutex_unlock(&interface.mutex);
+	pthread_mutex_unlock(&game.mutex);
+
+	/* boucle principale */
+	while(exit_request == FALSE) {
+
+		input_key = getch();
+
+		if((input_key == 'Q') || (input_key == 'q')) {
+			exit_request = TRUE;
+		}
+		else {
+			pthread_mutex_lock(&interface.mutex);
+			pthread_mutex_lock(&game.mutex);
+			interface_main(&interface,&game,input_key);
+			pthread_mutex_unlock(&interface.mutex);
+			pthread_mutex_unlock(&game.mutex);
+		}
+	}
+
+	/* suppression de l'interface */
+	pthread_mutex_lock(&interface.mutex);
+	pthread_mutex_lock(&game.mutex);
+	interface_supprimer(&interface);
+	pthread_mutex_unlock(&interface.mutex);
+	pthread_mutex_unlock(&game.mutex);
+
+	/* terminaison de ncurses */
+	ncurses_stopper();
+
+	pthread_exit(NULL);
 }
 
 int show(int* games) {

@@ -19,7 +19,7 @@
 #define FREE 	0
 #define RUNNING 1
 
-struct game {
+struct game_config {
 	struct map map;
 	struct scenario scenario;
 	int tcp_port;

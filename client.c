@@ -187,6 +187,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	/* connexion avec le serveur TCP */
+	sleep(1);
 	status = connect(tcp_sockfd,(struct sockaddr*)&tcpserver,sizeof(struct sockaddr_in));
 	if(status == -1) {
 		fprintf(stderr,"%s (socket connecting)\n",strerror(errno));

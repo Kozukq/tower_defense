@@ -26,7 +26,7 @@ struct game_config {
 };
 
 void* tcp_server(void* arg);
-int new_game(int* games);
+int new_game(int* games, int port);
 int check_limit(int* games);
 int show(int* games);
 

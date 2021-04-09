@@ -50,6 +50,8 @@ int main(int argc, char* argv[]) {
 	server.sin_port = htons(atoi(argv[1]));
 	server.sin_addr.s_addr = htonl(INADDR_ANY);
 
+	memset(&client,0,sizeof(struct sockaddr_in));
+
 	/* nommage de la socket */
 	status = bind(sockfd,(struct sockaddr*)&server,sizeof(struct sockaddr_in));
 	if(status == -1) {
@@ -80,7 +82,7 @@ int main(int argc, char* argv[]) {
 
 			/* réception client : choix menu */
 			if(DEBUG) fprintf(stdout,"..waiting connection\n");
-			status = recvfrom(sockfd,&msg,sizeof(msg),0,NULL,NULL);
+			status = recvfrom(sockfd,&msg,sizeof(msg),0,(struct sockaddr*)&client,&client_addrlen);
 			if(status == -1) {
 				fprintf(stderr,"%s (receiving from the client)\n",strerror(errno));
 				exit(EXIT_FAILURE);		
@@ -125,7 +127,7 @@ int main(int argc, char* argv[]) {
 
 				/* réception client : choix de configuration */
 				if(DEBUG) fprintf(stdout,"..waiting\n");
-				status = recvfrom(sockfd,&msg,sizeof(msg),0,NULL,NULL);
+				status = recvfrom(sockfd,&msg,sizeof(msg),0,(struct sockaddr*)&client,&client_addrlen);
 				if(status == -1) {
 					fprintf(stderr,"%s (receiving from the client)\n",strerror(errno));
 					exit(EXIT_FAILURE);		
@@ -135,7 +137,7 @@ int main(int argc, char* argv[]) {
 				game_config = (struct game_config*)malloc(sizeof(struct game_config));
 				game_config->map = config.maps[msg / 10];
 				game_config->scenario = config.scenarios[msg % 10];
-				game_config->tcp_port = new_game(games);
+				game_config->tcp_port = new_game(games,atoi(argv[1]));
 
 				/* envoi client : port TCP */
 				msg = game_config->tcp_port;
@@ -147,13 +149,13 @@ int main(int argc, char* argv[]) {
 				}
 
 				/* création du thread gérant le serveur TCP */
-				status = pthread_create(&gamethreads[game_config->tcp_port - 3001],NULL,tcp_server,game_config);
+				status = pthread_create(&gamethreads[game_config->tcp_port - atoi(argv[1]) + 1],NULL,tcp_server,game_config);
 				if(status != 0) {
 					fprintf(stderr,"error:%d (creating game thread)\n",status);
 					exit(EXIT_FAILURE);		
 				}
 
-				fprintf(stdout,"Game %d has launched\n",game_config->tcp_port - 3001);
+				fprintf(stdout,"Game %d has launched\n",game_config->tcp_port - atoi(argv[1]) + 1);
 			}
 			else if(msg == JOIN_GAME) {
 
@@ -176,14 +178,14 @@ int main(int argc, char* argv[]) {
 
 				/* réception client : choix de partie */
 				if(DEBUG) fprintf(stdout,"..waiting connection\n");
-				status = recvfrom(sockfd,&msg,sizeof(msg),0,NULL,NULL);
+				status = recvfrom(sockfd,&msg,sizeof(msg),0,(struct sockaddr*)&client,&client_addrlen);
 				if(status == -1) {
 					fprintf(stderr,"%s (receiving from the client)\n",strerror(errno));
 					exit(EXIT_FAILURE);		
 				}
 
 				/* préparation des données */
-				msg = msg + 3000;
+				msg = msg + atoi(argv[1]);
 
 				/* envoi client : port TCP pour rejoindre la partie */
 				if(DEBUG) fprintf(stdout,"sending..\n");
@@ -208,14 +210,14 @@ int main(int argc, char* argv[]) {
 
 			/* réception client : port TCP concerné par la fermeture */
 			if(DEBUG) fprintf(stdout,"..waiting\n");
-			status = recvfrom(sockfd,&msg,sizeof(msg),0,NULL,NULL);
+			status = recvfrom(sockfd,&msg,sizeof(msg),0,(struct sockaddr*)&client,&client_addrlen);
 			if(status == -1) {
 				fprintf(stderr,"%s (receiving from the client)\n",strerror(errno));
 				exit(EXIT_FAILURE);		
 			}
 
 			/* traitement de la terminaison du thread */
-			msg = msg - 3001;
+			msg = msg - atoi(argv[1]) + 1;
 			status = pthread_join(gamethreads[msg],(void*)game_config);
 			if(status != 0) {
 				fprintf(stderr,"error:%d (creating game thread)\n",status);
@@ -343,7 +345,7 @@ int check_limit(int* games) {
 	return games_running == MAX_GAMES;
 }
 
-int new_game(int* games) {
+int new_game(int* games, int port) {
 
 	int i = 0;
 
@@ -353,5 +355,5 @@ int new_game(int* games) {
 
 	games[i] = RUNNING;
 
-	return 3001 + i;
+	return port + i + 1;
 }
